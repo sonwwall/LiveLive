@@ -11,6 +11,8 @@ import (
 type RegisterReq struct {
 	Username string `thrift:"username,1" frugal:"1,default,string" json:"username"`
 	Password string `thrift:"password,2" frugal:"2,default,string" json:"password"`
+	Email    string `thrift:"email,3" frugal:"3,default,string" json:"email"`
+	Mobile   string `thrift:"mobile,4" frugal:"4,default,string" json:"mobile"`
 }
 
 func NewRegisterReq() *RegisterReq {
@@ -27,11 +29,25 @@ func (p *RegisterReq) GetUsername() (v string) {
 func (p *RegisterReq) GetPassword() (v string) {
 	return p.Password
 }
+
+func (p *RegisterReq) GetEmail() (v string) {
+	return p.Email
+}
+
+func (p *RegisterReq) GetMobile() (v string) {
+	return p.Mobile
+}
 func (p *RegisterReq) SetUsername(val string) {
 	p.Username = val
 }
 func (p *RegisterReq) SetPassword(val string) {
 	p.Password = val
+}
+func (p *RegisterReq) SetEmail(val string) {
+	p.Email = val
+}
+func (p *RegisterReq) SetMobile(val string) {
+	p.Mobile = val
 }
 
 func (p *RegisterReq) String() string {
@@ -44,6 +60,8 @@ func (p *RegisterReq) String() string {
 var fieldIDToName_RegisterReq = map[int16]string{
 	1: "username",
 	2: "password",
+	3: "email",
+	4: "mobile",
 }
 
 type RegisterResp struct {
@@ -191,6 +209,8 @@ var fieldIDToName_UserInfoReq = map[int16]string{
 
 type UserInfoResp struct {
 	Username string         `thrift:"username,1" frugal:"1,default,string" json:"username"`
+	Email    string         `thrift:"email,2" frugal:"2,default,string" json:"email"`
+	Mobile   string         `thrift:"mobile,3" frugal:"3,default,string" json:"mobile"`
 	BaseResp *base.BaseResp `thrift:"baseResp,255" frugal:"255,default,base.BaseResp" json:"baseResp"`
 }
 
@@ -205,6 +225,14 @@ func (p *UserInfoResp) GetUsername() (v string) {
 	return p.Username
 }
 
+func (p *UserInfoResp) GetEmail() (v string) {
+	return p.Email
+}
+
+func (p *UserInfoResp) GetMobile() (v string) {
+	return p.Mobile
+}
+
 var UserInfoResp_BaseResp_DEFAULT *base.BaseResp
 
 func (p *UserInfoResp) GetBaseResp() (v *base.BaseResp) {
@@ -215,6 +243,12 @@ func (p *UserInfoResp) GetBaseResp() (v *base.BaseResp) {
 }
 func (p *UserInfoResp) SetUsername(val string) {
 	p.Username = val
+}
+func (p *UserInfoResp) SetEmail(val string) {
+	p.Email = val
+}
+func (p *UserInfoResp) SetMobile(val string) {
+	p.Mobile = val
 }
 func (p *UserInfoResp) SetBaseResp(val *base.BaseResp) {
 	p.BaseResp = val
@@ -233,6 +267,8 @@ func (p *UserInfoResp) String() string {
 
 var fieldIDToName_UserInfoResp = map[int16]string{
 	1:   "username",
+	2:   "email",
+	3:   "mobile",
 	255: "baseResp",
 }
 

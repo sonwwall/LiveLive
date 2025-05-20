@@ -5,6 +5,8 @@ include "base.thrift"
 struct RegisterReq{
     1:string username
     2:string password
+    3:string email
+    4:string mobile
 }
 
 struct RegisterResp{
@@ -29,6 +31,8 @@ struct UserInfoReq{
 
 struct UserInfoResp{
     1:string username
+    2:string email
+    3:string mobile
 
     255:base.BaseResp baseResp
 }

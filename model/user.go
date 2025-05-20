@@ -7,8 +7,10 @@ import (
 
 type User struct {
 	gorm.Model
-	Username string `gorm:"type:varchar(100);uniqueIndex;not null" json:"username" form:"username"`
-	Password string `gorm:"type:varchar(255);not null" json:"password" form:"password"`
+	Username string `gorm:"type:varchar(100);uniqueIndex;not null" json:"username" form:"username" binding:"required"`
+	Password string `gorm:"type:varchar(255);not null" json:"password" form:"password" binding:"required"`
+	Email    string `gorm:"type:varchar(100);uniqueIndex;not null" json:"email" form:"email" binding:"required,email"`
+	Mobile   string `gorm:"type:varchar(100);uniqueIndex;not null" json:"mobile" form:"mobile" binding:"required"`
 }
 
 func MigrateUser(db *gorm.DB) {
