@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"LiveLive/api/code"
 	"LiveLive/api/rpc"
 	"LiveLive/kitex_gen/livelive/user"
 	"LiveLive/model"
@@ -16,10 +17,10 @@ import (
 
 func UserRegister(ctx context.Context, c *app.RequestContext) {
 	var req model.User
-	err := c.Bind(&req)
+	err := c.BindAndValidate(&req)
 	if err != nil {
 		c.JSON(200, response.Response{
-			Code: "1001",
+			Code: code.ErrInvalidParams,
 			Msg:  err.Error(),
 		})
 		return
@@ -33,12 +34,12 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 	})
 	if result == nil {
 		c.JSON(200, response.Response{
-			Code: "-1",
+			Code: -1,
 			Msg:  "内部错误",
 		})
 		return
 	}
-	if result.BaseResp.Code != "0" {
+	if result.BaseResp.Code != 0 {
 		c.JSON(200, response.Response{
 			Code: result.BaseResp.Code,
 			Msg:  result.BaseResp.Msg,
@@ -46,7 +47,7 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	c.JSON(200, response.Response{
-		Code: "0",
+		Code: 0,
 		Msg:  "注册成功",
 	})
 }
@@ -56,7 +57,7 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 	err := c.Bind(&req)
 	if err != nil {
 		c.JSON(200, response.Response{
-			Code: "1001",
+			Code: code.ErrInvalidParams,
 			Msg:  err.Error(),
 		})
 		return
@@ -67,12 +68,12 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 	})
 	if result == nil {
 		c.JSON(200, response.Response{
-			Code: "-1",
+			Code: -1,
 			Msg:  "内部错误",
 		})
 		return
 	}
-	if result.BaseResp.Code != "0" {
+	if result.BaseResp.Code != 0 {
 		c.JSON(200, response.Response{
 			Code: result.BaseResp.Code,
 			Msg:  result.BaseResp.Msg,
@@ -81,7 +82,7 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 	}
 
 	c.JSON(200, response.Response{
-		Code: "0",
+		Code: 0,
 		Msg:  "登录成功",
 	})
 }
@@ -95,12 +96,12 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 	})
 	if result == nil {
 		c.JSON(200, response.Response{
-			Code: "-1",
+			Code: -1,
 			Msg:  "内部错误",
 		})
 		return
 	}
-	if result.BaseResp.Code != "0" {
+	if result.BaseResp.Code != 0 {
 		c.JSON(200, response.Response{
 			Code: result.BaseResp.Code,
 			Msg:  result.BaseResp.Msg,
@@ -108,7 +109,7 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	c.JSON(200, response.Response{
-		Code: "0",
+		Code: 0,
 		Msg:  "ok",
 		Data: user.UserInfoResp{
 			Username: result.Username,

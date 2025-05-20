@@ -7,7 +7,7 @@ import (
 )
 
 type BaseResp struct {
-	Code string `thrift:"code,1" frugal:"1,default,string" json:"code"`
+	Code int64  `thrift:"code,1" frugal:"1,default,i64" json:"code"`
 	Msg  string `thrift:"msg,2" frugal:"2,default,string" json:"msg"`
 }
 
@@ -18,14 +18,14 @@ func NewBaseResp() *BaseResp {
 func (p *BaseResp) InitDefault() {
 }
 
-func (p *BaseResp) GetCode() (v string) {
+func (p *BaseResp) GetCode() (v int64) {
 	return p.Code
 }
 
 func (p *BaseResp) GetMsg() (v string) {
 	return p.Msg
 }
-func (p *BaseResp) SetCode(val string) {
+func (p *BaseResp) SetCode(val int64) {
 	p.Code = val
 }
 func (p *BaseResp) SetMsg(val string) {

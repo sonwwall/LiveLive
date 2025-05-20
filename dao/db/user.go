@@ -17,6 +17,18 @@ func FindUserByUsername(username string) (*model.User, error) {
 	return &user, err
 }
 
+func FindUserByMobile(mobile string) (*model.User, error) {
+	var user model.User
+	err := Mysql.Where("mobile = ?", mobile).First(&user).Error
+	return &user, err
+}
+
+func FindUserByEmail(email string) (*model.User, error) {
+	var user model.User
+	err := Mysql.Where("email = ?", email).First(&user).Error
+	return &user, err
+}
+
 func CheckUser(account, password string) ([]*model.User, error) {
 	res := make([]*model.User, 0)
 	if err := Mysql.Where(Mysql.Or("username = ?", account)).

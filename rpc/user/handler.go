@@ -5,6 +5,7 @@ import (
 	"LiveLive/kitex_gen/livelive/base"
 	user "LiveLive/kitex_gen/livelive/user"
 	"LiveLive/model"
+	"LiveLive/rpc/user/code"
 	"context"
 	"errors"
 	"gorm.io/gorm"
@@ -16,12 +17,47 @@ type UserServiceImpl struct{}
 // Register implements the UserServiceImpl interface.
 func (s *UserServiceImpl) Register(ctx context.Context, req *user.RegisterReq) (resp *user.RegisterResp, err error) {
 	usr := &model.User{Username: req.Username, Password: req.Password, Mobile: req.Mobile, Email: req.Email}
+	//进行参数验证
+	existUser, err := db.FindUserByUsername(req.Username)
+	if !(err != nil || existUser != nil) {
+		res := &user.RegisterResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrUsernameExist,
+				Msg:  "该用户名已存在",
+			},
+		}
+		return res, nil
+
+	}
+
+	existUser, err = db.FindUserByMobile(req.Mobile)
+	if err == nil || existUser == nil {
+		res := &user.RegisterResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrPhoneExist,
+				Msg:  "该手机号已经注册过",
+			},
+		}
+		return res, nil
+	}
+
+	existUser, err = db.FindUserByEmail(req.Email)
+	if err == nil || existUser == nil {
+		res := &user.RegisterResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrEmailExist,
+				Msg:  "该邮箱已被注册过",
+			},
+		}
+		return res, nil
+	}
+
 	result := db.AddUser(usr)
 	if result.Error != nil {
 		res := &user.RegisterResp{
 			BaseResp: &base.BaseResp{
-				Code: "2001",
-				Msg:  result.Error.Error(),
+				Code: code.ErrDB,
+				Msg:  "数据库错误：" + result.Error.Error(),
 			},
 		}
 
@@ -29,7 +65,7 @@ func (s *UserServiceImpl) Register(ctx context.Context, req *user.RegisterReq) (
 	}
 	res := &user.RegisterResp{
 		BaseResp: &base.BaseResp{
-			Code: "0",
+			Code: 0,
 			Msg:  "ok",
 		},
 	}
@@ -48,7 +84,7 @@ func (s *UserServiceImpl) Login(ctx context.Context, req *user.LoginReq) (resp *
 			res := &user.LoginResp{
 
 				BaseResp: &base.BaseResp{
-					Code: "2002",
+					Code: code.ErrUserNotExists,
 					Msg:  "用户不存在，请先注册",
 				},
 			}
@@ -56,7 +92,7 @@ func (s *UserServiceImpl) Login(ctx context.Context, req *user.LoginReq) (resp *
 		}
 		res := &user.LoginResp{
 			BaseResp: &base.BaseResp{
-				Code: "2003",
+				Code: 2003,
 				Msg:  resultErr.Error(),
 			},
 		}
@@ -66,7 +102,7 @@ func (s *UserServiceImpl) Login(ctx context.Context, req *user.LoginReq) (resp *
 	if result.Password != req.Password {
 		res := &user.LoginResp{
 			BaseResp: &base.BaseResp{
-				Code: "2004",
+				Code: 2004,
 				Msg:  "密码错误",
 			},
 		}
@@ -75,7 +111,7 @@ func (s *UserServiceImpl) Login(ctx context.Context, req *user.LoginReq) (resp *
 
 	res := &user.LoginResp{
 		BaseResp: &base.BaseResp{
-			Code: "0",
+			Code: 0,
 			Msg:  "ok",
 		},
 	}
@@ -93,7 +129,7 @@ func (s *UserServiceImpl) UserInfo(ctx context.Context, req *user.UserInfoReq) (
 			res := &user.UserInfoResp{
 
 				BaseResp: &base.BaseResp{
-					Code: "2002",
+					Code: code.ErrUserNotExists,
 					Msg:  "用户不存在",
 				},
 			}
@@ -101,8 +137,8 @@ func (s *UserServiceImpl) UserInfo(ctx context.Context, req *user.UserInfoReq) (
 		}
 		res := &user.UserInfoResp{
 			BaseResp: &base.BaseResp{
-				Code: "2003",
-				Msg:  resultErr.Error(),
+				Code: code.ErrDB,
+				Msg:  "数据库错误：" + resultErr.Error(),
 			},
 		}
 		return res, nil
@@ -113,7 +149,7 @@ func (s *UserServiceImpl) UserInfo(ctx context.Context, req *user.UserInfoReq) (
 		Email:    result.Email,
 		Mobile:   result.Mobile,
 		BaseResp: &base.BaseResp{
-			Code: "0",
+			Code: 0,
 			Msg:  "ok",
 		},
 	}

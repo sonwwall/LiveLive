@@ -1,5 +1,5 @@
 package code
 
 var (
-	ErrInvalidParams = 10001 //参数错误
+	ErrInvalidParams int64 = 10001 //参数错误
 )

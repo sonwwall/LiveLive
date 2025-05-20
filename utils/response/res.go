@@ -1,7 +1,7 @@
 package response
 
 type Response struct {
-	Code string      `json:"code"`
+	Code int64       `json:"code"`
 	Msg  string      `json:"msg"`
 	Data interface{} `json:"data"`
 }
