@@ -21,5 +21,8 @@ func main() {
 	auth := r.Group("/auth", middleware.JwtMiddleware.MiddlewareFunc())
 	auth.GET("/userinfo", handlers.UserInfo)
 
+	teacher := auth.Group("/teacher")
+	teacher.POST("/create_course", handlers.CreateCourse)
+
 	r.Spin()
 }

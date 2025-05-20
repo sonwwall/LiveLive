@@ -52,6 +52,8 @@ func Init() {
 	log.Info("数据库连接成功")
 
 	model.MigrateUser(DB)
+	model.MigrateLive(DB)
+	model.MigrateCourseAndCourseMember(DB)
 
 	db.Mysql = DB
 }

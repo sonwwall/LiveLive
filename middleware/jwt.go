@@ -59,13 +59,15 @@ func InitJwt() {
 			claims := jwt.ExtractClaims(ctx, c)
 			return &model.User{
 				Username: claims[IdentityKey].(string),
+				Role:     int32(claims["role"].(float64)), //在这里声明payload中的负载
 			}
 		},
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*model.User); ok {
+				//在这里加入自己的负载
 				return jwt.MapClaims{
 					IdentityKey: v.Username,
-					"identity":  v.Username,
+					"role":      v.Role,
 				}
 			}
 			return jwt.MapClaims{}

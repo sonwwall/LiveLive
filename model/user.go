@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/cloudwego/kitex/tool/internal_pkg/log"
 	"gorm.io/gorm"
 )
 
@@ -12,11 +11,4 @@ type User struct {
 	Email    string `gorm:"type:varchar(100);uniqueIndex;not null" json:"email,required" form:"email,required" binding:"required,email" vd:"email($)"`                     //符合email格式
 	Mobile   string `gorm:"type:varchar(100);uniqueIndex;not null" json:"mobile,required" form:"mobile,required" binding:"required" vd:"phone($,'CN')"`                    //符合中国手机号格式
 	Role     int32  `gorm:"not null" json:"role,required" form:"role,required" vd:"in($, 0, 1, 2)"`                                                                        //0:管理员，1:学生，2:老师
-}
-
-func MigrateUser(db *gorm.DB) {
-	err := db.AutoMigrate(&User{})
-	if err != nil {
-		log.Errorf("迁移失败：%s", err.Error())
-	}
 }
