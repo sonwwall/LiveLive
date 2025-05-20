@@ -5,7 +5,6 @@ import (
 	"LiveLive/api/rpc"
 	"LiveLive/kitex_gen/livelive/user"
 	"LiveLive/model"
-
 	utils2 "LiveLive/utils/md5"
 
 	"LiveLive/utils/response"
@@ -21,16 +20,18 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		c.JSON(200, response.Response{
 			Code: code.ErrInvalidParams,
-			Msg:  err.Error(),
+			Msg:  "参数绑定失败：" + err.Error(),
 		})
 		return
 	}
 	req.Password = utils2.MD5(req.Password)
+
 	result, _ := rpc.Register(ctx, &user.RegisterReq{
 		Username: req.Username,
 		Password: req.Password,
 		Email:    req.Email,
 		Mobile:   req.Mobile,
+		Role:     req.Role,
 	})
 	if result == nil {
 		c.JSON(200, response.Response{

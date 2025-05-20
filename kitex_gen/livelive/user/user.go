@@ -13,6 +13,7 @@ type RegisterReq struct {
 	Password string `thrift:"password,2" frugal:"2,default,string" json:"password"`
 	Email    string `thrift:"email,3" frugal:"3,default,string" json:"email"`
 	Mobile   string `thrift:"mobile,4" frugal:"4,default,string" json:"mobile"`
+	Role     int32  `thrift:"role,5" frugal:"5,default,i32" json:"role"`
 }
 
 func NewRegisterReq() *RegisterReq {
@@ -37,6 +38,10 @@ func (p *RegisterReq) GetEmail() (v string) {
 func (p *RegisterReq) GetMobile() (v string) {
 	return p.Mobile
 }
+
+func (p *RegisterReq) GetRole() (v int32) {
+	return p.Role
+}
 func (p *RegisterReq) SetUsername(val string) {
 	p.Username = val
 }
@@ -48,6 +53,9 @@ func (p *RegisterReq) SetEmail(val string) {
 }
 func (p *RegisterReq) SetMobile(val string) {
 	p.Mobile = val
+}
+func (p *RegisterReq) SetRole(val int32) {
+	p.Role = val
 }
 
 func (p *RegisterReq) String() string {
@@ -62,6 +70,7 @@ var fieldIDToName_RegisterReq = map[int16]string{
 	2: "password",
 	3: "email",
 	4: "mobile",
+	5: "role",
 }
 
 type RegisterResp struct {

@@ -7,6 +7,7 @@ struct RegisterReq{
     2:string password
     3:string email
     4:string mobile
+    5:i32 role
 }
 
 struct RegisterResp{
