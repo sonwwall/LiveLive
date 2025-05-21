@@ -178,10 +178,115 @@ var fieldIDToName_JoinCourseResp = map[int16]string{
 	255: "baseResp",
 }
 
+type CreateCourseInviteReq struct {
+	Classname  string `thrift:"classname,1" frugal:"1,default,string" json:"classname"`
+	MaxUsage   int64  `thrift:"max_usage,2" frugal:"2,default,i64" json:"max_usage"`
+	UsageCount int64  `thrift:"usage_count,3" frugal:"3,default,i64" json:"usage_count"`
+	ExpiredAt  int64  `thrift:"expired_at,4" frugal:"4,default,i64" json:"expired_at"`
+}
+
+func NewCreateCourseInviteReq() *CreateCourseInviteReq {
+	return &CreateCourseInviteReq{}
+}
+
+func (p *CreateCourseInviteReq) InitDefault() {
+}
+
+func (p *CreateCourseInviteReq) GetClassname() (v string) {
+	return p.Classname
+}
+
+func (p *CreateCourseInviteReq) GetMaxUsage() (v int64) {
+	return p.MaxUsage
+}
+
+func (p *CreateCourseInviteReq) GetUsageCount() (v int64) {
+	return p.UsageCount
+}
+
+func (p *CreateCourseInviteReq) GetExpiredAt() (v int64) {
+	return p.ExpiredAt
+}
+func (p *CreateCourseInviteReq) SetClassname(val string) {
+	p.Classname = val
+}
+func (p *CreateCourseInviteReq) SetMaxUsage(val int64) {
+	p.MaxUsage = val
+}
+func (p *CreateCourseInviteReq) SetUsageCount(val int64) {
+	p.UsageCount = val
+}
+func (p *CreateCourseInviteReq) SetExpiredAt(val int64) {
+	p.ExpiredAt = val
+}
+
+func (p *CreateCourseInviteReq) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("CreateCourseInviteReq(%+v)", *p)
+}
+
+var fieldIDToName_CreateCourseInviteReq = map[int16]string{
+	1: "classname",
+	2: "max_usage",
+	3: "usage_count",
+	4: "expired_at",
+}
+
+type CreateCourseInviteResp struct {
+	InviteCode string         `thrift:"invite_code,1" frugal:"1,default,string" json:"invite_code"`
+	BaseResp   *base.BaseResp `thrift:"baseResp,255" frugal:"255,default,base.BaseResp" json:"baseResp"`
+}
+
+func NewCreateCourseInviteResp() *CreateCourseInviteResp {
+	return &CreateCourseInviteResp{}
+}
+
+func (p *CreateCourseInviteResp) InitDefault() {
+}
+
+func (p *CreateCourseInviteResp) GetInviteCode() (v string) {
+	return p.InviteCode
+}
+
+var CreateCourseInviteResp_BaseResp_DEFAULT *base.BaseResp
+
+func (p *CreateCourseInviteResp) GetBaseResp() (v *base.BaseResp) {
+	if !p.IsSetBaseResp() {
+		return CreateCourseInviteResp_BaseResp_DEFAULT
+	}
+	return p.BaseResp
+}
+func (p *CreateCourseInviteResp) SetInviteCode(val string) {
+	p.InviteCode = val
+}
+func (p *CreateCourseInviteResp) SetBaseResp(val *base.BaseResp) {
+	p.BaseResp = val
+}
+
+func (p *CreateCourseInviteResp) IsSetBaseResp() bool {
+	return p.BaseResp != nil
+}
+
+func (p *CreateCourseInviteResp) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("CreateCourseInviteResp(%+v)", *p)
+}
+
+var fieldIDToName_CreateCourseInviteResp = map[int16]string{
+	1:   "invite_code",
+	255: "baseResp",
+}
+
 type CourseService interface {
 	CreateCourse(ctx context.Context, req *CreateCourseReq) (r *CreateCourseResp, err error)
 
 	JoinCourse(ctx context.Context, req *JoinCourseReq) (r *JoinCourseResp, err error)
+
+	CreateCourseInvite(ctx context.Context, req *CreateCourseInviteReq) (r *CreateCourseInviteResp, err error)
 }
 
 type CourseServiceCreateCourseArgs struct {
@@ -333,5 +438,81 @@ func (p *CourseServiceJoinCourseResult) String() string {
 }
 
 var fieldIDToName_CourseServiceJoinCourseResult = map[int16]string{
+	0: "success",
+}
+
+type CourseServiceCreateCourseInviteArgs struct {
+	Req *CreateCourseInviteReq `thrift:"req,1" frugal:"1,default,CreateCourseInviteReq" json:"req"`
+}
+
+func NewCourseServiceCreateCourseInviteArgs() *CourseServiceCreateCourseInviteArgs {
+	return &CourseServiceCreateCourseInviteArgs{}
+}
+
+func (p *CourseServiceCreateCourseInviteArgs) InitDefault() {
+}
+
+var CourseServiceCreateCourseInviteArgs_Req_DEFAULT *CreateCourseInviteReq
+
+func (p *CourseServiceCreateCourseInviteArgs) GetReq() (v *CreateCourseInviteReq) {
+	if !p.IsSetReq() {
+		return CourseServiceCreateCourseInviteArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+func (p *CourseServiceCreateCourseInviteArgs) SetReq(val *CreateCourseInviteReq) {
+	p.Req = val
+}
+
+func (p *CourseServiceCreateCourseInviteArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *CourseServiceCreateCourseInviteArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("CourseServiceCreateCourseInviteArgs(%+v)", *p)
+}
+
+var fieldIDToName_CourseServiceCreateCourseInviteArgs = map[int16]string{
+	1: "req",
+}
+
+type CourseServiceCreateCourseInviteResult struct {
+	Success *CreateCourseInviteResp `thrift:"success,0,optional" frugal:"0,optional,CreateCourseInviteResp" json:"success,omitempty"`
+}
+
+func NewCourseServiceCreateCourseInviteResult() *CourseServiceCreateCourseInviteResult {
+	return &CourseServiceCreateCourseInviteResult{}
+}
+
+func (p *CourseServiceCreateCourseInviteResult) InitDefault() {
+}
+
+var CourseServiceCreateCourseInviteResult_Success_DEFAULT *CreateCourseInviteResp
+
+func (p *CourseServiceCreateCourseInviteResult) GetSuccess() (v *CreateCourseInviteResp) {
+	if !p.IsSetSuccess() {
+		return CourseServiceCreateCourseInviteResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *CourseServiceCreateCourseInviteResult) SetSuccess(x interface{}) {
+	p.Success = x.(*CreateCourseInviteResp)
+}
+
+func (p *CourseServiceCreateCourseInviteResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *CourseServiceCreateCourseInviteResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("CourseServiceCreateCourseInviteResult(%+v)", *p)
+}
+
+var fieldIDToName_CourseServiceCreateCourseInviteResult = map[int16]string{
 	0: "success",
 }

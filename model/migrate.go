@@ -12,6 +12,13 @@ func MigrateCourseAndCourseMember(db *gorm.DB) {
 	}
 }
 
+func MigrateCourseInvite(db *gorm.DB) {
+	err := db.AutoMigrate(&CourseInvite{})
+	if err != nil {
+		log.Errorf("迁移失败：%s", err.Error())
+	}
+}
+
 func MigrateUser(db *gorm.DB) {
 	err := db.AutoMigrate(&User{})
 	if err != nil {

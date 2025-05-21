@@ -27,6 +27,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"CreateCourseInvite": kitex.NewMethodInfo(
+		createCourseInviteHandler,
+		newCourseServiceCreateCourseInviteArgs,
+		newCourseServiceCreateCourseInviteResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -129,6 +136,24 @@ func newCourseServiceJoinCourseResult() interface{} {
 	return course.NewCourseServiceJoinCourseResult()
 }
 
+func createCourseInviteHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*course.CourseServiceCreateCourseInviteArgs)
+	realResult := result.(*course.CourseServiceCreateCourseInviteResult)
+	success, err := handler.(course.CourseService).CreateCourseInvite(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newCourseServiceCreateCourseInviteArgs() interface{} {
+	return course.NewCourseServiceCreateCourseInviteArgs()
+}
+
+func newCourseServiceCreateCourseInviteResult() interface{} {
+	return course.NewCourseServiceCreateCourseInviteResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -154,6 +179,16 @@ func (p *kClient) JoinCourse(ctx context.Context, req *course.JoinCourseReq) (r 
 	_args.Req = req
 	var _result course.CourseServiceJoinCourseResult
 	if err = p.c.Call(ctx, "JoinCourse", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) CreateCourseInvite(ctx context.Context, req *course.CreateCourseInviteReq) (r *course.CreateCourseInviteResp, err error) {
+	var _args course.CourseServiceCreateCourseInviteArgs
+	_args.Req = req
+	var _result course.CourseServiceCreateCourseInviteResult
+	if err = p.c.Call(ctx, "CreateCourseInvite", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

@@ -33,3 +33,7 @@ func CreateCourse(ctx context.Context, req *course.CreateCourseReq) (*course.Cre
 func JoinCourse(ctx context.Context, req *course.JoinCourseReq) (*course.JoinCourseResp, error) {
 	return courseClient.JoinCourse(ctx, req)
 }
+
+func CreateCourseInvite(ctx context.Context, req *course.CreateCourseInviteReq) (*course.CreateCourseInviteResp, error) {
+	return courseClient.CreateCourseInvite(ctx, req)
+}

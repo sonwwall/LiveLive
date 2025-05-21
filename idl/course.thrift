@@ -25,7 +25,21 @@ struct JoinCourseResp{
     255:base.BaseResp baseResp
 }
 
+struct CreateCourseInviteReq{
+    1:string classname
+    2:i64 max_usage
+    3:i64 usage_count
+    4:i64 expired_at
+}
+
+struct CreateCourseInviteResp{
+    1:string invite_code
+
+    255:base.BaseResp baseResp
+}
+
 service CourseService{
     CreateCourseResp CreateCourse(1:CreateCourseReq req)
     JoinCourseResp JoinCourse(1:JoinCourseReq req)
+    CreateCourseInviteResp CreateCourseInvite(1:CreateCourseInviteReq req)
 }

@@ -13,6 +13,7 @@ import (
 type Client interface {
 	CreateCourse(ctx context.Context, req *course.CreateCourseReq, callOptions ...callopt.Option) (r *course.CreateCourseResp, err error)
 	JoinCourse(ctx context.Context, req *course.JoinCourseReq, callOptions ...callopt.Option) (r *course.JoinCourseResp, err error)
+	CreateCourseInvite(ctx context.Context, req *course.CreateCourseInviteReq, callOptions ...callopt.Option) (r *course.CreateCourseInviteResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -52,4 +53,9 @@ func (p *kCourseServiceClient) CreateCourse(ctx context.Context, req *course.Cre
 func (p *kCourseServiceClient) JoinCourse(ctx context.Context, req *course.JoinCourseReq, callOptions ...callopt.Option) (r *course.JoinCourseResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.JoinCourse(ctx, req)
+}
+
+func (p *kCourseServiceClient) CreateCourseInvite(ctx context.Context, req *course.CreateCourseInviteReq, callOptions ...callopt.Option) (r *course.CreateCourseInviteResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.CreateCourseInvite(ctx, req)
 }

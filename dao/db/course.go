@@ -28,3 +28,14 @@ func FindCourseByCourseName(courseName string) (*model.Course, error) {
 func AddStudentCourse(course *model.CourseMember) error {
 	return Mysql.Create(course).Error
 }
+
+func FindCourseInviteByCode(code string) (*model.CourseInvite, error) {
+	var courseInvite model.CourseInvite
+	err := Mysql.Where("code = ?", code).First(&courseInvite).Error
+	return &courseInvite, err
+
+}
+
+func AddCourseInvite(course *model.CourseInvite) error {
+	return Mysql.Create(course).Error
+}

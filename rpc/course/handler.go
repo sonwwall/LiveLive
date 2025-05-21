@@ -6,6 +6,7 @@ import (
 	course "LiveLive/kitex_gen/livelive/course"
 	"LiveLive/model"
 	"LiveLive/rpc/course/code"
+	"LiveLive/utils"
 	"context"
 	"errors"
 	"gorm.io/gorm"
@@ -79,6 +80,7 @@ func (s *CourseServiceImpl) JoinCourse(ctx context.Context, req *course.JoinCour
 	err = db.AddStudentCourse(joincourse)
 	if err != nil {
 		res := &course.JoinCourseResp{
+
 			BaseResp: &base.BaseResp{
 				Code: code.ErrDB,
 				Msg:  "数据库错误：" + err.Error(),
@@ -93,5 +95,61 @@ func (s *CourseServiceImpl) JoinCourse(ctx context.Context, req *course.JoinCour
 		},
 	}
 
+	return res, nil
+}
+
+// CreateCourseInvite implements the CourseServiceImpl interface.
+func (s *CourseServiceImpl) CreateCourseInvite(ctx context.Context, req *course.CreateCourseInviteReq) (resp *course.CreateCourseInviteResp, err error) {
+	existcourse, err := db.FindCourseByClassname(req.Classname)
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		res := &course.CreateCourseInviteResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrCourseNotExist,
+				Msg:  "课程不存在",
+			},
+		}
+		return res, nil
+	}
+	if err != nil {
+		res := &course.CreateCourseInviteResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrDB,
+				Msg:  "数据库错误：" + err.Error(),
+			},
+		}
+		return res, nil
+	}
+
+	var inviteCode string
+	for {
+		//检查一下code是否存在
+		tryinviteCode := utils.GenerateInviteCode(6)
+		_, err := db.FindCourseInviteByCode(tryinviteCode)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			inviteCode = tryinviteCode
+			break
+		}
+
+	}
+
+	courseInvite := &model.CourseInvite{
+		Classname: req.Classname,
+		CourseID:  int64(existcourse.ID),
+		MaxUsage:  &req.MaxUsage,
+		CreatedAt: time.Now(),
+		ExpiredAt: utils.TimestampToPtr(req.ExpiredAt),
+		Code:      inviteCode,
+	}
+
+	err = db.AddCourseInvite(courseInvite)
+
+	res := &course.CreateCourseInviteResp{
+		InviteCode: inviteCode,
+		BaseResp: &base.BaseResp{
+			Code: 0,
+			Msg:  "ok",
+		},
+	}
 	return res, nil
 }
