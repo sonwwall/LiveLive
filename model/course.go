@@ -14,7 +14,8 @@ type Course struct {
 
 type CourseMember struct {
 	gorm.Model
-	CourseId  int `gorm:"not null"`
-	StudentId int `gorm:"not null"`
+	CourseId  int    `gorm:"not null" `
+	StudentId int    `gorm:"not null"`
+	Classname string `gorm:"not null" json:"classname,required" form:"classname,required"`
 	JoinedAt  time.Time
 }

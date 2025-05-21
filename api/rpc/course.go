@@ -29,3 +29,7 @@ func InitCourseRPCClient() {
 func CreateCourse(ctx context.Context, req *course.CreateCourseReq) (*course.CreateCourseResp, error) {
 	return courseClient.CreateCourse(ctx, req)
 }
+
+func JoinCourse(ctx context.Context, req *course.JoinCourseReq) (*course.JoinCourseResp, error) {
+	return courseClient.JoinCourse(ctx, req)
+}

@@ -27,7 +27,7 @@ func CreateCourse(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		c.JSON(200, response.Response{
 			Code: code.ErrInvalidParams,
-			Msg:  "参数错误",
+			Msg:  "参数错误：" + err.Error(),
 		})
 		return
 	}
@@ -56,4 +56,46 @@ func CreateCourse(ctx context.Context, c *app.RequestContext) {
 		Msg:  "创建成功",
 	})
 
+}
+
+func JoinCourse(ctx context.Context, c *app.RequestContext) {
+	user, _ := c.Get(middleware.IdentityKey)
+	if user.(*model.User).Role != 2 {
+		c.JSON(200, response.Response{
+			Code: code.ErrNoPermission,
+			Msg:  "抱歉，您无权访问",
+		})
+		return
+	}
+	var req model.CourseMember
+	err := c.BindAndValidate(&req)
+	if err != nil {
+		c.JSON(200, response.Response{
+			Code: code.ErrInvalidParams,
+			Msg:  "参数错误：" + err.Error(),
+		})
+		return
+	}
+	result, _ := rpc.JoinCourse(ctx, &course.JoinCourseReq{
+		Classname: req.Classname,
+		StudentId: int64(user.(*model.User).Model.ID),
+	})
+	if result == nil {
+		c.JSON(200, response.Response{
+			Code: -1,
+			Msg:  "内部错误",
+		})
+		return
+	}
+	if result.BaseResp.Code != 0 {
+		c.JSON(200, response.Response{
+			Code: result.BaseResp.Code,
+			Msg:  result.BaseResp.Msg,
+		})
+		return
+	}
+	c.JSON(200, response.Response{
+		Code: 0,
+		Msg:  "加入成功",
+	})
 }

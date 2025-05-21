@@ -12,6 +12,7 @@ import (
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
 	CreateCourse(ctx context.Context, req *course.CreateCourseReq, callOptions ...callopt.Option) (r *course.CreateCourseResp, err error)
+	JoinCourse(ctx context.Context, req *course.JoinCourseReq, callOptions ...callopt.Option) (r *course.JoinCourseResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -46,4 +47,9 @@ type kCourseServiceClient struct {
 func (p *kCourseServiceClient) CreateCourse(ctx context.Context, req *course.CreateCourseReq, callOptions ...callopt.Option) (r *course.CreateCourseResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.CreateCourse(ctx, req)
+}
+
+func (p *kCourseServiceClient) JoinCourse(ctx context.Context, req *course.JoinCourseReq, callOptions ...callopt.Option) (r *course.JoinCourseResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.JoinCourse(ctx, req)
 }

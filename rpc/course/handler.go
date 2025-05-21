@@ -7,6 +7,9 @@ import (
 	"LiveLive/model"
 	"LiveLive/rpc/course/code"
 	"context"
+	"errors"
+	"gorm.io/gorm"
+	"time"
 )
 
 // CourseServiceImpl implements the last service interface defined in the IDL.
@@ -47,4 +50,48 @@ func (s *CourseServiceImpl) CreateCourse(ctx context.Context, req *course.Create
 	}
 	return res, nil
 
+}
+
+// JoinCourse implements the CourseServiceImpl interface.
+func (s *CourseServiceImpl) JoinCourse(ctx context.Context, req *course.JoinCourseReq) (resp *course.JoinCourseResp, err error) {
+
+	existcourse, err := db.FindCourseByClassname(req.Classname)
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		res := &course.JoinCourseResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrCourseNotExist,
+				Msg:  "课程不存在",
+			},
+		}
+		return res, nil
+	}
+	if err != nil {
+		res := &course.JoinCourseResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrDB,
+				Msg:  "数据库错误：" + err.Error(),
+			},
+		}
+		return res, nil
+	}
+	joincourse := &model.CourseMember{Classname: req.Classname, StudentId: int(req.StudentId), CourseId: int(existcourse.ID), JoinedAt: time.Now()}
+	err = db.AddStudentCourse(joincourse)
+	if err != nil {
+		res := &course.JoinCourseResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrDB,
+				Msg:  "数据库错误：" + err.Error(),
+			},
+		}
+		return res, nil
+	}
+	res := &course.JoinCourseResp{
+		BaseResp: &base.BaseResp{
+			Code: 0,
+			Msg:  "ok",
+		},
+	}
+
+	return res, nil
 }

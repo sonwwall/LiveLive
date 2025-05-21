@@ -18,3 +18,13 @@ func FindCourseByTeacherId(teacherId int) (*model.Course, error) {
 	err := Mysql.Where("teacher_id = ?", teacherId).First(&course).Error
 	return &course, err
 }
+
+func FindCourseByCourseName(courseName string) (*model.Course, error) {
+	var course model.Course
+	err := Mysql.Where("classname = ?", courseName).First(&course).Error
+	return &course, err
+}
+
+func AddStudentCourse(course *model.CourseMember) error {
+	return Mysql.Create(course).Error
+}

@@ -93,8 +93,95 @@ var fieldIDToName_CreateCourseResp = map[int16]string{
 	255: "baseResp",
 }
 
+type JoinCourseReq struct {
+	StudentId      int64  `thrift:"student_id,1" frugal:"1,default,i64" json:"student_id"`
+	Classname      string `thrift:"classname,2" frugal:"2,default,string" json:"classname"`
+	InvitationCode string `thrift:"invitation_code,3" frugal:"3,default,string" json:"invitation_code"`
+}
+
+func NewJoinCourseReq() *JoinCourseReq {
+	return &JoinCourseReq{}
+}
+
+func (p *JoinCourseReq) InitDefault() {
+}
+
+func (p *JoinCourseReq) GetStudentId() (v int64) {
+	return p.StudentId
+}
+
+func (p *JoinCourseReq) GetClassname() (v string) {
+	return p.Classname
+}
+
+func (p *JoinCourseReq) GetInvitationCode() (v string) {
+	return p.InvitationCode
+}
+func (p *JoinCourseReq) SetStudentId(val int64) {
+	p.StudentId = val
+}
+func (p *JoinCourseReq) SetClassname(val string) {
+	p.Classname = val
+}
+func (p *JoinCourseReq) SetInvitationCode(val string) {
+	p.InvitationCode = val
+}
+
+func (p *JoinCourseReq) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("JoinCourseReq(%+v)", *p)
+}
+
+var fieldIDToName_JoinCourseReq = map[int16]string{
+	1: "student_id",
+	2: "classname",
+	3: "invitation_code",
+}
+
+type JoinCourseResp struct {
+	BaseResp *base.BaseResp `thrift:"baseResp,255" frugal:"255,default,base.BaseResp" json:"baseResp"`
+}
+
+func NewJoinCourseResp() *JoinCourseResp {
+	return &JoinCourseResp{}
+}
+
+func (p *JoinCourseResp) InitDefault() {
+}
+
+var JoinCourseResp_BaseResp_DEFAULT *base.BaseResp
+
+func (p *JoinCourseResp) GetBaseResp() (v *base.BaseResp) {
+	if !p.IsSetBaseResp() {
+		return JoinCourseResp_BaseResp_DEFAULT
+	}
+	return p.BaseResp
+}
+func (p *JoinCourseResp) SetBaseResp(val *base.BaseResp) {
+	p.BaseResp = val
+}
+
+func (p *JoinCourseResp) IsSetBaseResp() bool {
+	return p.BaseResp != nil
+}
+
+func (p *JoinCourseResp) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("JoinCourseResp(%+v)", *p)
+}
+
+var fieldIDToName_JoinCourseResp = map[int16]string{
+	255: "baseResp",
+}
+
 type CourseService interface {
 	CreateCourse(ctx context.Context, req *CreateCourseReq) (r *CreateCourseResp, err error)
+
+	JoinCourse(ctx context.Context, req *JoinCourseReq) (r *JoinCourseResp, err error)
 }
 
 type CourseServiceCreateCourseArgs struct {
@@ -170,5 +257,81 @@ func (p *CourseServiceCreateCourseResult) String() string {
 }
 
 var fieldIDToName_CourseServiceCreateCourseResult = map[int16]string{
+	0: "success",
+}
+
+type CourseServiceJoinCourseArgs struct {
+	Req *JoinCourseReq `thrift:"req,1" frugal:"1,default,JoinCourseReq" json:"req"`
+}
+
+func NewCourseServiceJoinCourseArgs() *CourseServiceJoinCourseArgs {
+	return &CourseServiceJoinCourseArgs{}
+}
+
+func (p *CourseServiceJoinCourseArgs) InitDefault() {
+}
+
+var CourseServiceJoinCourseArgs_Req_DEFAULT *JoinCourseReq
+
+func (p *CourseServiceJoinCourseArgs) GetReq() (v *JoinCourseReq) {
+	if !p.IsSetReq() {
+		return CourseServiceJoinCourseArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+func (p *CourseServiceJoinCourseArgs) SetReq(val *JoinCourseReq) {
+	p.Req = val
+}
+
+func (p *CourseServiceJoinCourseArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *CourseServiceJoinCourseArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("CourseServiceJoinCourseArgs(%+v)", *p)
+}
+
+var fieldIDToName_CourseServiceJoinCourseArgs = map[int16]string{
+	1: "req",
+}
+
+type CourseServiceJoinCourseResult struct {
+	Success *JoinCourseResp `thrift:"success,0,optional" frugal:"0,optional,JoinCourseResp" json:"success,omitempty"`
+}
+
+func NewCourseServiceJoinCourseResult() *CourseServiceJoinCourseResult {
+	return &CourseServiceJoinCourseResult{}
+}
+
+func (p *CourseServiceJoinCourseResult) InitDefault() {
+}
+
+var CourseServiceJoinCourseResult_Success_DEFAULT *JoinCourseResp
+
+func (p *CourseServiceJoinCourseResult) GetSuccess() (v *JoinCourseResp) {
+	if !p.IsSetSuccess() {
+		return CourseServiceJoinCourseResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *CourseServiceJoinCourseResult) SetSuccess(x interface{}) {
+	p.Success = x.(*JoinCourseResp)
+}
+
+func (p *CourseServiceJoinCourseResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *CourseServiceJoinCourseResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("CourseServiceJoinCourseResult(%+v)", *p)
+}
+
+var fieldIDToName_CourseServiceJoinCourseResult = map[int16]string{
 	0: "success",
 }

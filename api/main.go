@@ -25,5 +25,8 @@ func main() {
 	teacher := auth.Group("/teacher")
 	teacher.POST("/create_course", handlers.CreateCourse)
 
+	student := auth.Group("/student")
+	student.POST("/join_course", handlers.JoinCourse)
+
 	r.Spin()
 }
