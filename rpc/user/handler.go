@@ -9,7 +9,6 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
-	"log"
 )
 
 // UserServiceImpl implements the last service interface defined in the IDL.
@@ -18,10 +17,10 @@ type UserServiceImpl struct{}
 // Register implements the UserServiceImpl interface.
 func (s *UserServiceImpl) Register(ctx context.Context, req *user.RegisterReq) (resp *user.RegisterResp, err error) {
 	usr := &model.User{Username: req.Username, Password: req.Password, Mobile: req.Mobile, Email: req.Email, Role: req.Role}
-	log.Println("role1", usr.Role)
+
 	//进行参数验证
 	existUser, err := db.FindUserByUsername(req.Username)
-	if err == nil || existUser == nil {
+	if err == nil && existUser != nil {
 		res := &user.RegisterResp{
 			BaseResp: &base.BaseResp{
 				Code: code.ErrUsernameExist,
@@ -33,7 +32,7 @@ func (s *UserServiceImpl) Register(ctx context.Context, req *user.RegisterReq) (
 	}
 
 	existUser, err = db.FindUserByMobile(req.Mobile)
-	if err == nil || existUser == nil {
+	if err == nil && existUser != nil {
 		res := &user.RegisterResp{
 			BaseResp: &base.BaseResp{
 				Code: code.ErrPhoneExist,
@@ -44,7 +43,7 @@ func (s *UserServiceImpl) Register(ctx context.Context, req *user.RegisterReq) (
 	}
 
 	existUser, err = db.FindUserByEmail(req.Email)
-	if err == nil || existUser == nil {
+	if err == nil && existUser != nil {
 		res := &user.RegisterResp{
 			BaseResp: &base.BaseResp{
 				Code: code.ErrEmailExist,
@@ -126,7 +125,7 @@ func (s *UserServiceImpl) UserInfo(ctx context.Context, req *user.UserInfoReq) (
 
 	username := req.GetUsername()
 	result, resultErr := db.FindUserByUsername(username)
-	if resultErr != nil || result == nil {
+	if resultErr != nil && result == nil {
 		if errors.Is(resultErr, gorm.ErrRecordNotFound) {
 			res := &user.UserInfoResp{
 

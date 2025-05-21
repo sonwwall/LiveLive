@@ -11,7 +11,7 @@ import (
 type CreateCourseReq struct {
 	Classname   string `thrift:"classname,1" frugal:"1,default,string" json:"classname"`
 	Description string `thrift:"description,2" frugal:"2,default,string" json:"description"`
-	TeacherId   string `thrift:"teacher_id,3" frugal:"3,default,string" json:"teacher_id"`
+	TeacherId   int64  `thrift:"teacher_id,3" frugal:"3,default,i64" json:"teacher_id"`
 }
 
 func NewCreateCourseReq() *CreateCourseReq {
@@ -29,7 +29,7 @@ func (p *CreateCourseReq) GetDescription() (v string) {
 	return p.Description
 }
 
-func (p *CreateCourseReq) GetTeacherId() (v string) {
+func (p *CreateCourseReq) GetTeacherId() (v int64) {
 	return p.TeacherId
 }
 func (p *CreateCourseReq) SetClassname(val string) {
@@ -38,7 +38,7 @@ func (p *CreateCourseReq) SetClassname(val string) {
 func (p *CreateCourseReq) SetDescription(val string) {
 	p.Description = val
 }
-func (p *CreateCourseReq) SetTeacherId(val string) {
+func (p *CreateCourseReq) SetTeacherId(val int64) {
 	p.TeacherId = val
 }
 

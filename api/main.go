@@ -13,6 +13,7 @@ func main() {
 	dao.Init()
 
 	rpc.InitUserRPCClient()
+	rpc.InitCourseRPCClient()
 
 	r := server.Default(server.WithHostPorts("0.0.0.0:8080"))
 

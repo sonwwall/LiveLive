@@ -1,1 +1,20 @@
 package db
+
+import "LiveLive/model"
+
+func CreateCourse(course *model.Course) (err error) {
+	return Mysql.Create(course).Error
+}
+
+func FindCourseByClassname(classname string) (*model.Course, error) {
+	var course model.Course
+	err := Mysql.Where("classname = ?", classname).First(&course).Error
+	return &course, err
+
+}
+
+func FindCourseByTeacherId(teacherId int) (*model.Course, error) {
+	var course model.Course
+	err := Mysql.Where("teacher_id = ?", teacherId).First(&course).Error
+	return &course, err
+}

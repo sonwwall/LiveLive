@@ -37,4 +37,5 @@ func CheckUser(account, password string) ([]*model.User, error) {
 		return nil, err
 	}
 	return res, nil
+
 }

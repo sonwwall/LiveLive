@@ -5,7 +5,7 @@ include "base.thrift"
 struct CreateCourseReq{
     1:string classname
     2:string description
-    3:string teacher_id
+    3:i64 teacher_id
 
 }
 

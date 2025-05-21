@@ -10,6 +10,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/common/utils"
 	"github.com/hertz-contrib/jwt"
+	"gorm.io/gorm"
 	"net/http"
 	"time"
 )
@@ -60,6 +61,9 @@ func InitJwt() {
 			return &model.User{
 				Username: claims[IdentityKey].(string),
 				Role:     int32(claims["role"].(float64)), //在这里声明payload中的负载
+				Model: gorm.Model{
+					ID: uint(claims["id"].(float64)), // gorm.Model.ID 是 uint 类型
+				},
 			}
 		},
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
@@ -68,6 +72,7 @@ func InitJwt() {
 				return jwt.MapClaims{
 					IdentityKey: v.Username,
 					"role":      v.Role,
+					"id":        v.Model.ID,
 				}
 			}
 			return jwt.MapClaims{}

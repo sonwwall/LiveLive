@@ -7,7 +7,7 @@ import (
 
 type Course struct {
 	gorm.Model
-	Classname   string `gorm:"not null"`
+	Classname   string `gorm:"not null" json:"classname,required" form:"classname,required"`
 	Description string
 	TeacherId   int `gorm:"not null"`
 }
