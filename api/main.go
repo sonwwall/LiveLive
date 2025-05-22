@@ -25,6 +25,7 @@ func main() {
 	teacher := auth.Group("/teacher")
 	teacher.POST("/create_course", handlers.CreateCourse)
 	teacher.POST("/create_courseInvite", handlers.CreateCourseInvite)
+	teacher.GET("/streamKey", handlers.GetStreamKey)
 
 	student := auth.Group("/student")
 	student.POST("/join_course", handlers.JoinCourse)
