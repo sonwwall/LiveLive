@@ -122,7 +122,7 @@ func JoinCourse(ctx context.Context, c *app.RequestContext) {
 		})
 		return
 	}
-	var req model.CourseMember
+	var req model.JoinCourse
 	err := c.BindAndValidate(&req)
 	if err != nil {
 		c.JSON(200, response.Response{
@@ -132,8 +132,9 @@ func JoinCourse(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	result, _ := rpc.JoinCourse(ctx, &course.JoinCourseReq{
-		Classname: req.Classname,
-		StudentId: int64(user.(*model.User).Model.ID),
+		Classname:      req.Classname,
+		StudentId:      int64(user.(*model.User).Model.ID),
+		InvitationCode: req.InvitationCode,
 	})
 	if result == nil {
 		c.JSON(200, response.Response{

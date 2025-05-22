@@ -76,6 +76,28 @@ func (s *CourseServiceImpl) JoinCourse(ctx context.Context, req *course.JoinCour
 		}
 		return res, nil
 	}
+
+	existCourseInvite, err := db.FindCourseInviteByCode(req.InvitationCode)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		res := &course.JoinCourseResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrInviteCodeInvalid,
+				Msg:  "邀请码无效",
+			},
+		}
+		return res, nil
+	}
+
+	if int64(existcourse.ID) != existCourseInvite.CourseID {
+		res := &course.JoinCourseResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrInviteCodeInvalid,
+				Msg:  "邀请码无效",
+			},
+		}
+		return res, nil
+	}
+
 	joincourse := &model.CourseMember{Classname: req.Classname, StudentId: int(req.StudentId), CourseId: int(existcourse.ID), JoinedAt: time.Now()}
 	err = db.AddStudentCourse(joincourse)
 	if err != nil {

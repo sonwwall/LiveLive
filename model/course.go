@@ -19,3 +19,9 @@ type CourseMember struct {
 	Classname string `gorm:"not null" json:"classname,required" form:"classname,required"`
 	JoinedAt  time.Time
 }
+
+type JoinCourse struct {
+	StudentId      int    `gorm:"not null"`
+	Classname      string ` json:"classname,required" form:"classname,required"`
+	InvitationCode string ` json:"invitation_code,required" form:"invitation_code,required"`
+}
