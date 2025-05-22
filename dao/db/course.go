@@ -39,3 +39,9 @@ func FindCourseInviteByCode(code string) (*model.CourseInvite, error) {
 func AddCourseInvite(course *model.CourseInvite) error {
 	return Mysql.Create(course).Error
 }
+
+func FindCourseInviteByCourseId(courseId uint) (*model.CourseInvite, error) {
+	var courseInvite model.CourseInvite
+	err := Mysql.Where("course_id = ?", courseId).First(&courseInvite).Error
+	return &courseInvite, err
+}

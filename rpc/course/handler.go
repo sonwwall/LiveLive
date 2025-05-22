@@ -102,6 +102,7 @@ func (s *CourseServiceImpl) JoinCourse(ctx context.Context, req *course.JoinCour
 func (s *CourseServiceImpl) CreateCourseInvite(ctx context.Context, req *course.CreateCourseInviteReq) (resp *course.CreateCourseInviteResp, err error) {
 	existcourse, err := db.FindCourseByClassname(req.Classname)
 
+	//检查一下课程是否存在
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		res := &course.CreateCourseInviteResp{
 			BaseResp: &base.BaseResp{
@@ -116,6 +117,19 @@ func (s *CourseServiceImpl) CreateCourseInvite(ctx context.Context, req *course.
 			BaseResp: &base.BaseResp{
 				Code: code.ErrDB,
 				Msg:  "数据库错误：" + err.Error(),
+			},
+		}
+		return res, nil
+	}
+
+	//检查一下是否有没过期的邀请码，有的话直接返回
+	existCourseInvite, err := db.FindCourseInviteByCourseId(existcourse.ID)
+	if err == nil && existCourseInvite != nil {
+		res := &course.CreateCourseInviteResp{
+			InviteCode: existCourseInvite.Code,
+			BaseResp: &base.BaseResp{
+				Code: 0,
+				Msg:  "ok",
 			},
 		}
 		return res, nil
