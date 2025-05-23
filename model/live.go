@@ -9,7 +9,7 @@ type LiveSession struct {
 	TeacherID int64  `gorm:"not null"` // 冗余字段，便于查询
 	RtmpURL   string `gorm:"not null"`
 	StreamKey string `gorm:"not null"` // RTMP 推流码
-	ClassName string `gorm:"not null" json:"class_name,required" form:"class_name,required"`
+	ClassName string `gorm:"not null" json:"classname,required" form:"classname,required"`
 	StartTime time.Time
 	EndTime   *time.Time //可空时间，直播进行时时可以为nil
 }

@@ -14,6 +14,7 @@ func main() {
 
 	rpc.InitUserRPCClient()
 	rpc.InitCourseRPCClient()
+	rpc.InitLiveRPCClient()
 
 	r := server.Default(server.WithHostPorts("0.0.0.0:8080"))
 

@@ -11,7 +11,7 @@ struct GetStreamKeyResp{
     1:string rtmp_url
     2:string stream_key
 
-    255:base.BaseResp base
+    255:base.BaseResp baseResp
 }
 
 service LiveService{

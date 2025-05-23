@@ -282,7 +282,7 @@ func (p *GetStreamKeyResp) FastReadField255(buf []byte) (int, error) {
 	} else {
 		offset += l
 	}
-	p.Base = _field
+	p.BaseResp = _field
 	return offset, nil
 }
 
@@ -329,7 +329,7 @@ func (p *GetStreamKeyResp) fastWriteField2(buf []byte, w thrift.NocopyWriter) in
 func (p *GetStreamKeyResp) fastWriteField255(buf []byte, w thrift.NocopyWriter) int {
 	offset := 0
 	offset += thrift.Binary.WriteFieldBegin(buf[offset:], thrift.STRUCT, 255)
-	offset += p.Base.FastWriteNocopy(buf[offset:], w)
+	offset += p.BaseResp.FastWriteNocopy(buf[offset:], w)
 	return offset
 }
 
@@ -350,7 +350,7 @@ func (p *GetStreamKeyResp) field2Length() int {
 func (p *GetStreamKeyResp) field255Length() int {
 	l := 0
 	l += thrift.Binary.FieldBeginLength()
-	l += p.Base.BLength()
+	l += p.BaseResp.BLength()
 	return l
 }
 

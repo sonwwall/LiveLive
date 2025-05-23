@@ -44,6 +44,7 @@ func GetStreamKey(ctx context.Context, c *app.RequestContext) {
 		})
 		return
 	}
+
 	c.JSON(200, response.Response{
 		Code: 0,
 		Msg:  "ok",

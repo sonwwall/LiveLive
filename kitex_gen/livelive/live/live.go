@@ -49,7 +49,7 @@ var fieldIDToName_GetStreamKeyReq = map[int16]string{
 type GetStreamKeyResp struct {
 	RtmpUrl   string         `thrift:"rtmp_url,1" frugal:"1,default,string" json:"rtmp_url"`
 	StreamKey string         `thrift:"stream_key,2" frugal:"2,default,string" json:"stream_key"`
-	Base      *base.BaseResp `thrift:"base,255" frugal:"255,default,base.BaseResp" json:"base"`
+	BaseResp  *base.BaseResp `thrift:"baseResp,255" frugal:"255,default,base.BaseResp" json:"baseResp"`
 }
 
 func NewGetStreamKeyResp() *GetStreamKeyResp {
@@ -67,13 +67,13 @@ func (p *GetStreamKeyResp) GetStreamKey() (v string) {
 	return p.StreamKey
 }
 
-var GetStreamKeyResp_Base_DEFAULT *base.BaseResp
+var GetStreamKeyResp_BaseResp_DEFAULT *base.BaseResp
 
-func (p *GetStreamKeyResp) GetBase() (v *base.BaseResp) {
-	if !p.IsSetBase() {
-		return GetStreamKeyResp_Base_DEFAULT
+func (p *GetStreamKeyResp) GetBaseResp() (v *base.BaseResp) {
+	if !p.IsSetBaseResp() {
+		return GetStreamKeyResp_BaseResp_DEFAULT
 	}
-	return p.Base
+	return p.BaseResp
 }
 func (p *GetStreamKeyResp) SetRtmpUrl(val string) {
 	p.RtmpUrl = val
@@ -81,12 +81,12 @@ func (p *GetStreamKeyResp) SetRtmpUrl(val string) {
 func (p *GetStreamKeyResp) SetStreamKey(val string) {
 	p.StreamKey = val
 }
-func (p *GetStreamKeyResp) SetBase(val *base.BaseResp) {
-	p.Base = val
+func (p *GetStreamKeyResp) SetBaseResp(val *base.BaseResp) {
+	p.BaseResp = val
 }
 
-func (p *GetStreamKeyResp) IsSetBase() bool {
-	return p.Base != nil
+func (p *GetStreamKeyResp) IsSetBaseResp() bool {
+	return p.BaseResp != nil
 }
 
 func (p *GetStreamKeyResp) String() string {
@@ -99,7 +99,7 @@ func (p *GetStreamKeyResp) String() string {
 var fieldIDToName_GetStreamKeyResp = map[int16]string{
 	1:   "rtmp_url",
 	2:   "stream_key",
-	255: "base",
+	255: "baseResp",
 }
 
 type LiveService interface {
