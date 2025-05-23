@@ -18,6 +18,7 @@ struct JoinCourseReq{
     1:i64 student_id
     2:string classname
     3:string invitation_code
+    4:string teacher_name
 }
 
 struct JoinCourseResp{
@@ -30,6 +31,7 @@ struct CreateCourseInviteReq{
     2:i64 max_usage
     3:i64 usage_count
     4:i64 expired_at
+    5:i64 teacher_id
 }
 
 struct CreateCourseInviteResp{

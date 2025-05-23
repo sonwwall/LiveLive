@@ -90,6 +90,7 @@ func CreateCourseInvite(ctx context.Context, c *app.RequestContext) {
 		Classname: req.Classname,
 		MaxUsage:  maxUsage,
 		ExpiredAt: utils.PtrToTimestamp(req.ExpiredAt),
+		TeacherId: int64(user.(*model.User).Model.ID),
 	})
 	if result == nil {
 		c.JSON(200, response.Response{
@@ -135,6 +136,7 @@ func JoinCourse(ctx context.Context, c *app.RequestContext) {
 		Classname:      req.Classname,
 		StudentId:      int64(user.(*model.User).Model.ID),
 		InvitationCode: req.InvitationCode,
+		TeacherName:    req.TeacherName,
 	})
 	if result == nil {
 		c.JSON(200, response.Response{

@@ -21,7 +21,7 @@ func (s *CourseServiceImpl) CreateCourse(ctx context.Context, req *course.Create
 	mycourse := &model.Course{Classname: req.Classname, Description: req.Description, TeacherId: int(req.TeacherId)}
 
 	//参数验证
-	existCourse, err := db.FindCourseByClassname(req.Classname)
+	existCourse, err := db.FindCourseByClassnameAndTeacherId(req.Classname, req.TeacherId)
 	if err == nil && existCourse != nil {
 		res := &course.CreateCourseResp{
 			BaseResp: &base.BaseResp{
@@ -56,7 +56,28 @@ func (s *CourseServiceImpl) CreateCourse(ctx context.Context, req *course.Create
 // JoinCourse implements the CourseServiceImpl interface.
 func (s *CourseServiceImpl) JoinCourse(ctx context.Context, req *course.JoinCourseReq) (resp *course.JoinCourseResp, err error) {
 
-	existcourse, err := db.FindCourseByClassname(req.Classname)
+	teacher, err := db.FindUserByUsername(req.TeacherName)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		res := &course.JoinCourseResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrTeacherNotExist,
+				Msg:  "该老师不存在！",
+			},
+		}
+		return res, nil
+	}
+
+	if err != nil {
+		res := &course.JoinCourseResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrDB,
+				Msg:  "数据库错误：" + err.Error(),
+			},
+		}
+		return res, nil
+	}
+
+	existcourse, err := db.FindCourseByClassnameAndTeacherId(req.Classname, int64(teacher.ID))
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		res := &course.JoinCourseResp{
@@ -122,7 +143,7 @@ func (s *CourseServiceImpl) JoinCourse(ctx context.Context, req *course.JoinCour
 
 // CreateCourseInvite implements the CourseServiceImpl interface.
 func (s *CourseServiceImpl) CreateCourseInvite(ctx context.Context, req *course.CreateCourseInviteReq) (resp *course.CreateCourseInviteResp, err error) {
-	existcourse, err := db.FindCourseByClassname(req.Classname)
+	existcourse, err := db.FindCourseByClassnameAndTeacherId(req.Classname, req.TeacherId)
 
 	//检查一下课程是否存在
 	if errors.Is(err, gorm.ErrRecordNotFound) {

@@ -20,7 +20,7 @@ type LiveServiceImpl struct{}
 
 // GetStreamKey implements the LiveServiceImpl interface.
 func (s *LiveServiceImpl) GetStreamKey(ctx context.Context, req *live.GetStreamKeyReq) (resp *live.GetStreamKeyResp, err error) {
-	existCourse, err := db.FindCourseByClassname(req.Classname)
+	existCourse, err := db.FindCourseByClassnameAndTeacherId(req.Classname, req.TeacherId)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		res := &live.GetStreamKeyResp{
 			BaseResp: &base.BaseResp{

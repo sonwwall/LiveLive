@@ -97,6 +97,7 @@ type JoinCourseReq struct {
 	StudentId      int64  `thrift:"student_id,1" frugal:"1,default,i64" json:"student_id"`
 	Classname      string `thrift:"classname,2" frugal:"2,default,string" json:"classname"`
 	InvitationCode string `thrift:"invitation_code,3" frugal:"3,default,string" json:"invitation_code"`
+	TeacherName    string `thrift:"teacher_name,4" frugal:"4,default,string" json:"teacher_name"`
 }
 
 func NewJoinCourseReq() *JoinCourseReq {
@@ -117,6 +118,10 @@ func (p *JoinCourseReq) GetClassname() (v string) {
 func (p *JoinCourseReq) GetInvitationCode() (v string) {
 	return p.InvitationCode
 }
+
+func (p *JoinCourseReq) GetTeacherName() (v string) {
+	return p.TeacherName
+}
 func (p *JoinCourseReq) SetStudentId(val int64) {
 	p.StudentId = val
 }
@@ -125,6 +130,9 @@ func (p *JoinCourseReq) SetClassname(val string) {
 }
 func (p *JoinCourseReq) SetInvitationCode(val string) {
 	p.InvitationCode = val
+}
+func (p *JoinCourseReq) SetTeacherName(val string) {
+	p.TeacherName = val
 }
 
 func (p *JoinCourseReq) String() string {
@@ -138,6 +146,7 @@ var fieldIDToName_JoinCourseReq = map[int16]string{
 	1: "student_id",
 	2: "classname",
 	3: "invitation_code",
+	4: "teacher_name",
 }
 
 type JoinCourseResp struct {
@@ -183,6 +192,7 @@ type CreateCourseInviteReq struct {
 	MaxUsage   int64  `thrift:"max_usage,2" frugal:"2,default,i64" json:"max_usage"`
 	UsageCount int64  `thrift:"usage_count,3" frugal:"3,default,i64" json:"usage_count"`
 	ExpiredAt  int64  `thrift:"expired_at,4" frugal:"4,default,i64" json:"expired_at"`
+	TeacherId  int64  `thrift:"teacher_id,5" frugal:"5,default,i64" json:"teacher_id"`
 }
 
 func NewCreateCourseInviteReq() *CreateCourseInviteReq {
@@ -207,6 +217,10 @@ func (p *CreateCourseInviteReq) GetUsageCount() (v int64) {
 func (p *CreateCourseInviteReq) GetExpiredAt() (v int64) {
 	return p.ExpiredAt
 }
+
+func (p *CreateCourseInviteReq) GetTeacherId() (v int64) {
+	return p.TeacherId
+}
 func (p *CreateCourseInviteReq) SetClassname(val string) {
 	p.Classname = val
 }
@@ -218,6 +232,9 @@ func (p *CreateCourseInviteReq) SetUsageCount(val int64) {
 }
 func (p *CreateCourseInviteReq) SetExpiredAt(val int64) {
 	p.ExpiredAt = val
+}
+func (p *CreateCourseInviteReq) SetTeacherId(val int64) {
+	p.TeacherId = val
 }
 
 func (p *CreateCourseInviteReq) String() string {
@@ -232,6 +249,7 @@ var fieldIDToName_CreateCourseInviteReq = map[int16]string{
 	2: "max_usage",
 	3: "usage_count",
 	4: "expired_at",
+	5: "teacher_id",
 }
 
 type CreateCourseInviteResp struct {

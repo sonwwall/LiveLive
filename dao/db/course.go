@@ -6,9 +6,9 @@ func CreateCourse(course *model.Course) (err error) {
 	return Mysql.Create(course).Error
 }
 
-func FindCourseByClassname(classname string) (*model.Course, error) {
+func FindCourseByClassnameAndTeacherId(classname string, TeacherId int64) (*model.Course, error) {
 	var course model.Course
-	err := Mysql.Where("classname = ?", classname).First(&course).Error
+	err := Mysql.Where("teacher_id = ? AND classname = ?", TeacherId, classname).First(&course).Error
 	return &course, err
 
 }
