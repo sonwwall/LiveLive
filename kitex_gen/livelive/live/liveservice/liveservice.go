@@ -20,6 +20,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"WatchLive": kitex.NewMethodInfo(
+		watchLiveHandler,
+		newLiveServiceWatchLiveArgs,
+		newLiveServiceWatchLiveResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -104,6 +111,24 @@ func newLiveServiceGetStreamKeyResult() interface{} {
 	return live.NewLiveServiceGetStreamKeyResult()
 }
 
+func watchLiveHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*live.LiveServiceWatchLiveArgs)
+	realResult := result.(*live.LiveServiceWatchLiveResult)
+	success, err := handler.(live.LiveService).WatchLive(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newLiveServiceWatchLiveArgs() interface{} {
+	return live.NewLiveServiceWatchLiveArgs()
+}
+
+func newLiveServiceWatchLiveResult() interface{} {
+	return live.NewLiveServiceWatchLiveResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -119,6 +144,16 @@ func (p *kClient) GetStreamKey(ctx context.Context, req *live.GetStreamKeyReq) (
 	_args.Req = req
 	var _result live.LiveServiceGetStreamKeyResult
 	if err = p.c.Call(ctx, "GetStreamKey", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) WatchLive(ctx context.Context, req *live.WatchLiveReq) (r *live.WatchLiveResp, err error) {
+	var _args live.LiveServiceWatchLiveArgs
+	_args.Req = req
+	var _result live.LiveServiceWatchLiveResult
+	if err = p.c.Call(ctx, "WatchLive", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

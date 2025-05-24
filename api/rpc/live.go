@@ -27,3 +27,7 @@ func InitLiveRPCClient() {
 func GetStreamKey(ctx context.Context, req *live.GetStreamKeyReq) (*live.GetStreamKeyResp, error) {
 	return liveClient.GetStreamKey(ctx, req)
 }
+
+func WatchLive(ctx context.Context, req *live.WatchLiveReq) (*live.WatchLiveResp, error) {
+	return liveClient.WatchLive(ctx, req)
+}

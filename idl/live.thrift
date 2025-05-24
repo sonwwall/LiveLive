@@ -14,12 +14,19 @@ struct GetStreamKeyResp{
     255:base.BaseResp baseResp
 }
 
-struct WatchLive{
+struct WatchLiveReq{
     1:string classname
     2:i64 student_id
     3:string teacher_name
 }
 
+struct WatchLiveResp{
+    1:string Addr
+
+    255:base.BaseResp baseResp
+}
+
 service LiveService{
     GetStreamKeyResp GetStreamKey(1:GetStreamKeyReq req)
+    WatchLiveResp WatchLive(1:WatchLiveReq req)
 }

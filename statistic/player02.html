@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>直播播放</title>
+    <script src="https://cdn.jsdelivr.net/npm/flv.js@latest"></script>
+</head>
+<body>
+<h2>直播播放器</h2>
+<video id="videoElement" controls autoplay width="800" height="450"></video>
+
+<script>
+    if (flvjs.isSupported()) {
+        var flvPlayer = flvjs.createPlayer({
+            type: 'flv',
+            url: 'http://127.0.0.1:8080/auth/student/watch_live'
+        });
+        flvPlayer.attachMediaElement(document.getElementById('videoElement'));
+        flvPlayer.load();
+        flvPlayer.play();
+    } else {
+        alert("你的浏览器不支持 flv.js 播放");
+    }
+</script>
+</body>
+</html>

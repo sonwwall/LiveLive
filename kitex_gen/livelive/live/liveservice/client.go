@@ -12,6 +12,7 @@ import (
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
 	GetStreamKey(ctx context.Context, req *live.GetStreamKeyReq, callOptions ...callopt.Option) (r *live.GetStreamKeyResp, err error)
+	WatchLive(ctx context.Context, req *live.WatchLiveReq, callOptions ...callopt.Option) (r *live.WatchLiveResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -46,4 +47,9 @@ type kLiveServiceClient struct {
 func (p *kLiveServiceClient) GetStreamKey(ctx context.Context, req *live.GetStreamKeyReq, callOptions ...callopt.Option) (r *live.GetStreamKeyResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetStreamKey(ctx, req)
+}
+
+func (p *kLiveServiceClient) WatchLive(ctx context.Context, req *live.WatchLiveReq, callOptions ...callopt.Option) (r *live.WatchLiveResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.WatchLive(ctx, req)
 }

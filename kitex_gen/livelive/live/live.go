@@ -102,8 +102,104 @@ var fieldIDToName_GetStreamKeyResp = map[int16]string{
 	255: "baseResp",
 }
 
+type WatchLiveReq struct {
+	Classname   string `thrift:"classname,1" frugal:"1,default,string" json:"classname"`
+	StudentId   int64  `thrift:"student_id,2" frugal:"2,default,i64" json:"student_id"`
+	TeacherName string `thrift:"teacher_name,3" frugal:"3,default,string" json:"teacher_name"`
+}
+
+func NewWatchLiveReq() *WatchLiveReq {
+	return &WatchLiveReq{}
+}
+
+func (p *WatchLiveReq) InitDefault() {
+}
+
+func (p *WatchLiveReq) GetClassname() (v string) {
+	return p.Classname
+}
+
+func (p *WatchLiveReq) GetStudentId() (v int64) {
+	return p.StudentId
+}
+
+func (p *WatchLiveReq) GetTeacherName() (v string) {
+	return p.TeacherName
+}
+func (p *WatchLiveReq) SetClassname(val string) {
+	p.Classname = val
+}
+func (p *WatchLiveReq) SetStudentId(val int64) {
+	p.StudentId = val
+}
+func (p *WatchLiveReq) SetTeacherName(val string) {
+	p.TeacherName = val
+}
+
+func (p *WatchLiveReq) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("WatchLiveReq(%+v)", *p)
+}
+
+var fieldIDToName_WatchLiveReq = map[int16]string{
+	1: "classname",
+	2: "student_id",
+	3: "teacher_name",
+}
+
+type WatchLiveResp struct {
+	Addr     string         `thrift:"Addr,1" frugal:"1,default,string" json:"Addr"`
+	BaseResp *base.BaseResp `thrift:"baseResp,255" frugal:"255,default,base.BaseResp" json:"baseResp"`
+}
+
+func NewWatchLiveResp() *WatchLiveResp {
+	return &WatchLiveResp{}
+}
+
+func (p *WatchLiveResp) InitDefault() {
+}
+
+func (p *WatchLiveResp) GetAddr() (v string) {
+	return p.Addr
+}
+
+var WatchLiveResp_BaseResp_DEFAULT *base.BaseResp
+
+func (p *WatchLiveResp) GetBaseResp() (v *base.BaseResp) {
+	if !p.IsSetBaseResp() {
+		return WatchLiveResp_BaseResp_DEFAULT
+	}
+	return p.BaseResp
+}
+func (p *WatchLiveResp) SetAddr(val string) {
+	p.Addr = val
+}
+func (p *WatchLiveResp) SetBaseResp(val *base.BaseResp) {
+	p.BaseResp = val
+}
+
+func (p *WatchLiveResp) IsSetBaseResp() bool {
+	return p.BaseResp != nil
+}
+
+func (p *WatchLiveResp) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("WatchLiveResp(%+v)", *p)
+}
+
+var fieldIDToName_WatchLiveResp = map[int16]string{
+	1:   "Addr",
+	255: "baseResp",
+}
+
 type LiveService interface {
 	GetStreamKey(ctx context.Context, req *GetStreamKeyReq) (r *GetStreamKeyResp, err error)
+
+	WatchLive(ctx context.Context, req *WatchLiveReq) (r *WatchLiveResp, err error)
 }
 
 type LiveServiceGetStreamKeyArgs struct {
@@ -179,5 +275,81 @@ func (p *LiveServiceGetStreamKeyResult) String() string {
 }
 
 var fieldIDToName_LiveServiceGetStreamKeyResult = map[int16]string{
+	0: "success",
+}
+
+type LiveServiceWatchLiveArgs struct {
+	Req *WatchLiveReq `thrift:"req,1" frugal:"1,default,WatchLiveReq" json:"req"`
+}
+
+func NewLiveServiceWatchLiveArgs() *LiveServiceWatchLiveArgs {
+	return &LiveServiceWatchLiveArgs{}
+}
+
+func (p *LiveServiceWatchLiveArgs) InitDefault() {
+}
+
+var LiveServiceWatchLiveArgs_Req_DEFAULT *WatchLiveReq
+
+func (p *LiveServiceWatchLiveArgs) GetReq() (v *WatchLiveReq) {
+	if !p.IsSetReq() {
+		return LiveServiceWatchLiveArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+func (p *LiveServiceWatchLiveArgs) SetReq(val *WatchLiveReq) {
+	p.Req = val
+}
+
+func (p *LiveServiceWatchLiveArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *LiveServiceWatchLiveArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("LiveServiceWatchLiveArgs(%+v)", *p)
+}
+
+var fieldIDToName_LiveServiceWatchLiveArgs = map[int16]string{
+	1: "req",
+}
+
+type LiveServiceWatchLiveResult struct {
+	Success *WatchLiveResp `thrift:"success,0,optional" frugal:"0,optional,WatchLiveResp" json:"success,omitempty"`
+}
+
+func NewLiveServiceWatchLiveResult() *LiveServiceWatchLiveResult {
+	return &LiveServiceWatchLiveResult{}
+}
+
+func (p *LiveServiceWatchLiveResult) InitDefault() {
+}
+
+var LiveServiceWatchLiveResult_Success_DEFAULT *WatchLiveResp
+
+func (p *LiveServiceWatchLiveResult) GetSuccess() (v *WatchLiveResp) {
+	if !p.IsSetSuccess() {
+		return LiveServiceWatchLiveResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *LiveServiceWatchLiveResult) SetSuccess(x interface{}) {
+	p.Success = x.(*WatchLiveResp)
+}
+
+func (p *LiveServiceWatchLiveResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *LiveServiceWatchLiveResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("LiveServiceWatchLiveResult(%+v)", *p)
+}
+
+var fieldIDToName_LiveServiceWatchLiveResult = map[int16]string{
 	0: "success",
 }

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>直播播放器</title>
+</head>
+<body>
+<h2>课程直播</h2>
+<video id="videoElement" width="800" controls autoplay></video>
+
+<script src="https://cdn.jsdelivr.net/npm/flv.js@latest/dist/flv.min.js"></script>
+<script>
+    // 这里填入后端生成的带签名地址，比如后端接口返回的
+    const flvUrl = "http://localhost:8060/live/teacher_3,course_2_teacher01_class01.flv?exp=1748019939&sign=34d541d12776321a70062197fde30203&uid=1";
+
+    if (flvjs.isSupported()) {
+        const videoElement = document.getElementById('videoElement');
+        const flvPlayer = flvjs.createPlayer({
+            type: 'flv',
+            url: flvUrl
+        });
+        flvPlayer.attachMediaElement(videoElement);
+        flvPlayer.load();
+        flvPlayer.play();
+    } else {
+        alert("当前浏览器不支持播放 FLV 格式，请使用 Chrome 或 Edge");
+    }
+</script>
+</body>
+</html>

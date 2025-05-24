@@ -14,8 +14,9 @@ func MD5(str string) string {
 }
 
 // GenerateSign 生成带签名的url路径
-func GenerateSign(uri string, exp int64, secret string) string {
-	data := fmt.Sprintf("%s:%d %s", uri, exp, secret)
-	md5Sum := md5.Sum([]byte(data))
-	return hex.EncodeToString(md5Sum[:])
+func GenerateSign(uri, uid, exp, secret string) string {
+	// 拼接签名字符串
+	raw := fmt.Sprintf("%s:%s:%s %s", uri, uid, exp, secret)
+	hash := md5.Sum([]byte(raw))
+	return hex.EncodeToString(hash[:])
 }

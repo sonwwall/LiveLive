@@ -42,18 +42,23 @@ func (s *LiveServiceImpl) GetStreamKey(ctx context.Context, req *live.GetStreamK
 	}
 
 	RtmpUrl := fmt.Sprintf("rtmp://localhost:1935/live")
-	StreamKeyRow := fmt.Sprintf("teacher_%d,course_%d_%s", req.TeacherId, existCourse.ID, req.Classname)
+	StreamKeyRow := fmt.Sprintf("teacher_%d_course_%d_%s", req.TeacherId, existCourse.ID, req.Classname)
+	log.Println("测试4")
 	log.Println(StreamKeyRow)
+	//TODO 注意这里如果没有连上livego不会报错！！！检查怎么回事
 	StreamKey, err := utils.GetStreamKey(StreamKeyRow)
+	log.Println("测试5")
+	log.Println(StreamKey)
 	if err != nil {
 		res := &live.GetStreamKeyResp{
 			BaseResp: &base.BaseResp{
-				Code: code.ErrDB,
+				Code: code.ErrGetStreamKey,
 				Msg:  err.Error(),
 			},
 		}
 		return res, nil
 	}
+	log.Println("测试6")
 
 	livesession := &model.LiveSession{
 		ClassName: req.Classname,
@@ -63,6 +68,7 @@ func (s *LiveServiceImpl) GetStreamKey(ctx context.Context, req *live.GetStreamK
 		RtmpURL:   RtmpUrl,
 		StreamKey: StreamKey,
 	}
+	log.Println("测试2")
 
 	err = db.AddLive(livesession)
 	if err != nil {
@@ -75,6 +81,8 @@ func (s *LiveServiceImpl) GetStreamKey(ctx context.Context, req *live.GetStreamK
 		return res, nil
 	}
 
+	log.Println("测试3")
+
 	res := &live.GetStreamKeyResp{
 		RtmpUrl:   RtmpUrl,
 		StreamKey: StreamKey,
@@ -83,6 +91,71 @@ func (s *LiveServiceImpl) GetStreamKey(ctx context.Context, req *live.GetStreamK
 			Msg:  "ok",
 		},
 	}
+	log.Println("测试1")
+	log.Println(RtmpUrl, StreamKey)
 
 	return res, nil
+}
+
+// WatchLive implements the LiveServiceImpl interface.
+func (s *LiveServiceImpl) WatchLive(ctx context.Context, req *live.WatchLiveReq) (resp *live.WatchLiveResp, err error) {
+
+	teacher, err := db.FindUserByUsername(req.TeacherName)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		res := &live.WatchLiveResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrTeacherNotExist,
+				Msg:  "该老师不存在",
+			},
+		}
+		return res, nil
+	}
+	if err != nil {
+		res := &live.WatchLiveResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrDB,
+				Msg:  "数据库错误：" + err.Error(),
+			},
+		}
+		return res, nil
+	}
+
+	course, err := db.FindCourseByClassnameAndTeacherId(req.Classname, int64(teacher.ID))
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		res := &live.WatchLiveResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrCourseNotExist,
+				Msg:  "该课程不存在",
+			},
+		}
+		return res, nil
+	}
+	if err != nil {
+		res := &live.WatchLiveResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrDB,
+				Msg:  "数据库错误：" + err.Error(),
+			},
+		}
+		return res, nil
+	}
+
+	//baseURL := "localhost:8060"
+	//StreamKeyRow := fmt.Sprintf("teacher_%d,course_%d_%s", req.TeacherId, existCourse.ID, req.Classname)
+	uri := fmt.Sprintf("/live/teacher_%d_course_%d_%s.flv", teacher.ID, course.ID, req.Classname)
+	//log.Println(uri)
+	//uid := req.StudentId    // 学生的用户 ID
+	//secret := "sonwwall"    // 与 Nginx 统一
+	//ttl := 10 * time.Minute // 有效期 10 分钟
+	//
+	//playURL := utils.GeneratePlayURL(baseURL, uri, secret, uid, ttl)
+	res := &live.WatchLiveResp{
+		Addr: uri,
+		BaseResp: &base.BaseResp{
+			Code: 0,
+			Msg:  "ok",
+		},
+	}
+	return res, nil
+
 }

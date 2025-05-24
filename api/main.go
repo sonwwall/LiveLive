@@ -30,6 +30,7 @@ func main() {
 
 	student := auth.Group("/student")
 	student.POST("/join_course", handlers.JoinCourse)
+	student.GET("/watch_live", handlers.WatchLive)
 
 	r.Spin()
 }
