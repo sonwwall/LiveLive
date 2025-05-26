@@ -27,7 +27,7 @@ func GetStreamKey(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		c.JSON(200, response.Response{
 			Code: code.ErrInvalidParams,
-			Msg:  "参数错误",
+			Msg:  "参数错误" + err.Error(),
 		})
 		return
 	}

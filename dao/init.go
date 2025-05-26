@@ -55,6 +55,7 @@ func Init() {
 	model.MigrateLive(DB)
 	model.MigrateCourseAndCourseMember(DB)
 	model.MigrateCourseInvite(DB)
+	model.MigrateQuestion(DB)
 
 	db.Mysql = DB
 }

@@ -15,6 +15,7 @@ func main() {
 	rpc.InitUserRPCClient()
 	rpc.InitCourseRPCClient()
 	rpc.InitLiveRPCClient()
+	rpc.InitQuizRPCClient()
 
 	r := server.Default(server.WithHostPorts("0.0.0.0:8080"))
 
@@ -27,6 +28,7 @@ func main() {
 	teacher.POST("/create_course", handlers.CreateCourse)
 	teacher.POST("/create_courseInvite", handlers.CreateCourseInvite)
 	teacher.GET("/streamKey", handlers.GetStreamKey)
+	teacher.POST("/choice_question", handlers.PublishChoiceQuestion)
 
 	student := auth.Group("/student")
 	student.POST("/join_course", handlers.JoinCourse)

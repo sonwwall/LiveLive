@@ -25,8 +25,8 @@ func InitJwt() {
 	JwtMiddleware, err = jwt.New(&jwt.HertzJWTMiddleware{
 		Realm:         "test zone",
 		Key:           []byte("secret key"),
-		Timeout:       time.Hour,
-		MaxRefresh:    time.Hour,
+		Timeout:       48 * time.Hour,
+		MaxRefresh:    48 * time.Hour,
 		TokenLookup:   "header: Authorization, query: token, cookie: jwt",
 		TokenHeadName: "Bearer",
 		LoginResponse: func(ctx context.Context, c *app.RequestContext, code int, token string, expire time.Time) {
