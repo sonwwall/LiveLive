@@ -13,6 +13,7 @@ type WsClient struct {
 	SendCh   chan []byte
 }
 
+// ReadPump 读取输入的消息
 func (c *WsClient) ReadPump(hub *WsHub) {
 	defer func() {
 		hub.UnregisterClient(c)
@@ -20,12 +21,12 @@ func (c *WsClient) ReadPump(hub *WsHub) {
 	}()
 
 	for {
-		_, _, err := c.Conn.ReadMessage()
+		_, msg, err := c.Conn.ReadMessage()
 		if err != nil {
 			log.Printf("read error: %v", err)
 			break
 		}
-		// 可扩展处理接收到的消息（如提交答题）
+		HandleMessage(msg, c, hub)
 	}
 }
 

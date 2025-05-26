@@ -1,6 +1,10 @@
 package ws
 
 import (
+	dao "LiveLive/dao/rdb"
+	"context"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -10,6 +14,18 @@ import (
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true },
+}
+
+type WsMessage struct {
+	Type string          `json:"type"` // "answer", "answer_result"
+	Data json.RawMessage `json:"data"`
+}
+
+type AnswerMessage struct {
+	QuestionID string `json:"question_id"`
+	StudentID  string `json:"student_id"`
+	Answer     string `json:"answer"`
+	CourseID   string `json:"course_id"`
 }
 
 func NewHandler(hub *WsHub) http.HandlerFunc {
@@ -64,5 +80,29 @@ func NewHandler(hub *WsHub) http.HandlerFunc {
 
 		go client.WritePump()
 		go client.ReadPump(hub)
+	}
+}
+
+func HandleMessage(msg []byte, client *WsClient, hub *WsHub) {
+	var wsMsg WsMessage
+	if err := json.Unmarshal(msg, &wsMsg); err != nil {
+		log.Println("解析消息失败:", err)
+		return
+	}
+
+	switch wsMsg.Type {
+	case "choice_answer":
+		var a AnswerMessage
+		if err := json.Unmarshal(wsMsg.Data, &a); err != nil {
+			log.Println("解析答题数据失败:", err)
+			return
+		}
+		key := fmt.Sprintf("answer:%s", a.QuestionID)
+		err := dao.Redis.HSet(context.Background(), key, a.StudentID, a.Answer).Err()
+		if err != nil {
+			log.Println("写入 Redis 失败:", err)
+		}
+	default:
+		log.Println("未知类型:", wsMsg.Type)
 	}
 }

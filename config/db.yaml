@@ -4,3 +4,7 @@ mysql:
   user: "root"
   password: "123456"
   dbname: "livelive"
+redis:
+  host: "127.0.0.1"
+  port: 6379
+
