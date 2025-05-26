@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"log"
 	"sync"
 )
 
@@ -19,10 +20,18 @@ func (h *WsHub) RegisterClient(c *WsClient) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
+	//这是一个按照courseId分类的连接池
 	if h.connections[c.CourseID] == nil {
 		h.connections[c.CourseID] = make(map[*WsClient]bool)
 	}
 	h.connections[c.CourseID][c] = true
+	if c.Role == 0 {
+		log.Printf("老师%d加入了课堂%d", c.UserId, c.CourseID)
+	}
+	if c.Role == 1 {
+		log.Printf("学生%d加入了课堂%d", c.UserId, c.CourseID)
+	}
+
 }
 
 func (h *WsHub) UnregisterClient(c *WsClient) {
@@ -35,6 +44,7 @@ func (h *WsHub) UnregisterClient(c *WsClient) {
 			close(c.SendCh)
 		}
 	}
+	log.Printf("学生%d退出了课堂%d", c.UserId, c.CourseID)
 }
 
 func (h *WsHub) BroadcastToCourse(courseID int64, msg []byte) {

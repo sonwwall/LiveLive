@@ -18,10 +18,6 @@ type QuizServiceImpl struct {
 	wsHub *ws.WsHub
 }
 
-//func NewQuizService(hub *ws.WsHub) *QuizServiceImpl {
-//	return &QuizServiceImpl{wsHub: hub}
-//}
-
 // PublishChoiceQuestion implements the QuizServiceImpl interface.
 func (s *QuizServiceImpl) PublishChoiceQuestion(ctx context.Context, req *quiz.PublishChoiceQuestionReq) (resp *quiz.PublishChoiceQuestionResp, err error) {
 	optsJson, _ := json.Marshal(req.Options) //四个选项先转化为json类型
@@ -33,7 +29,7 @@ func (s *QuizServiceImpl) PublishChoiceQuestion(ctx context.Context, req *quiz.P
 		Answer:    req.Answer,
 		Deadline:  utils.TimestampToPtr(req.Deadline),
 	}
-	err = db.AddChoiceQuestion(question)
+	err, questionId := db.AddChoiceQuestion(question)
 	if err != nil {
 		log.Printf("db.AddChoiceQuestion err: %+v", err)
 	}
@@ -41,9 +37,10 @@ func (s *QuizServiceImpl) PublishChoiceQuestion(ctx context.Context, req *quiz.P
 	msg := map[string]interface{}{
 		"type": "choice_question",
 		"data": map[string]interface{}{
-			"title":    req.Title,
-			"options":  req.Options,
-			"deadline": req.Deadline,
+			"question_id": questionId,
+			"title":       req.Title,
+			"options":     req.Options,
+			"deadline":    req.Deadline,
 		},
 	}
 	data, _ := json.Marshal(msg)

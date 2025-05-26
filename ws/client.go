@@ -8,6 +8,8 @@ import (
 type WsClient struct {
 	Conn     *websocket.Conn
 	CourseID int64
+	UserId   int64
+	Role     int8 //0是老师，1是学生
 	SendCh   chan []byte
 }
 

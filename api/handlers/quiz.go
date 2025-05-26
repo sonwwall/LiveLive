@@ -6,7 +6,6 @@ import (
 	"LiveLive/kitex_gen/livelive/quiz"
 	"LiveLive/middleware"
 	"LiveLive/model"
-	"LiveLive/utils"
 	"LiveLive/utils/response"
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
@@ -24,11 +23,11 @@ func PublishChoiceQuestion(ctx context.Context, c *app.RequestContext) {
 	}
 
 	type PublishChoiceQuestionReq struct {
-		CourseID int64      `json:"course_id,required" form:"course_id,required"` //由前端直接传入
-		Title    string     `json:"title,required" form:"title,required"`
-		Options  []string   `json:"options,required" form:"options,required"`
-		Answer   int8       `json:"answer,required" form:"answer,required"`
-		Deadline *time.Time `json:"deadline" form:"deadline"`
+		CourseID int64    `json:"course_id,required" form:"course_id,required"` //由前端直接传入
+		Title    string   `json:"title,required" form:"title,required"`
+		Options  []string `json:"options,required" form:"options,required"`
+		Answer   int8     `json:"answer,required" form:"answer,required"`
+		Deadline uint64   `json:"deadline,required" form:"deadline,required"` //秒
 	}
 
 	var req PublishChoiceQuestionReq
@@ -47,7 +46,7 @@ func PublishChoiceQuestion(ctx context.Context, c *app.RequestContext) {
 		Title:     req.Title,
 		Options:   req.Options,
 		Answer:    req.Answer,
-		Deadline:  utils.PtrToTimestamp(req.Deadline),
+		Deadline:  time.Now().Add(time.Duration(req.Deadline) * time.Second).Unix(),
 	})
 
 	if result == nil {
