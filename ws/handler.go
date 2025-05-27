@@ -29,6 +29,12 @@ type AnswerMessage struct {
 	CourseID   string `json:"course_id"`
 }
 
+type ChatMessage struct {
+	UserID   string `json:"user_id"`
+	CourseID string `json:"course_id"`
+	Content  string `json:"content"`
+}
+
 func NewHandler(hub *WsHub) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		courseIDStr := r.URL.Query().Get("course_id")
@@ -93,30 +99,59 @@ func HandleMessage(msg []byte, client *WsClient, hub *WsHub) {
 
 	switch wsMsg.Type {
 	case "choice_answer":
-		var a AnswerMessage
-		if err := json.Unmarshal(wsMsg.Data, &a); err != nil {
-			log.Println("解析答题数据失败:", err)
-			return
-		}
-		key := fmt.Sprintf("choice_answer:%s", a.QuestionID)
-		//检查是否提交过答案
-		exists, _ := dao.Redis.HExists(context.Background(), key, a.StudentID).Result()
-
-		if exists {
-
-			for client := range hub.Connections[utils.StringToInt64(a.CourseID)] {
-				if client.UserId == utils.StringToInt64(a.StudentID) {
-					client.SendCh <- []byte("您已提交过答案，无法再次提交")
-					return
-				}
-			}
-		}
-		//设置redis缓存 hash类型
-		err := dao.Redis.HSet(context.Background(), key, a.StudentID, a.Answer).Err()
-		if err != nil {
-			log.Println("写入 Redis 失败:", err)
-		}
+		MessageChoiceQuestion(msg, client, hub, &wsMsg)
+	case "chat":
+		log.Println(wsMsg.Type, wsMsg.Data)
+		MessageChat(msg, client, hub, &wsMsg)
 	default:
 		log.Println("未知类型:", wsMsg.Type)
+	}
+}
+
+func MessageChoiceQuestion(msg []byte, client *WsClient, hub *WsHub, wsMsg *WsMessage) {
+	var a AnswerMessage
+	if err := json.Unmarshal(wsMsg.Data, &a); err != nil {
+		log.Println("解析答题数据失败:", err)
+		return
+	}
+	key := fmt.Sprintf("choice_answer:%s", a.QuestionID)
+	//检查是否提交过答案
+	exists, _ := dao.Redis.HExists(context.Background(), key, a.StudentID).Result()
+
+	if exists {
+
+		for client := range hub.Connections[utils.StringToInt64(a.CourseID)] {
+			if client.UserId == utils.StringToInt64(a.StudentID) {
+				client.SendCh <- []byte("您已提交过答案，无法再次提交")
+				return
+			}
+		}
+	}
+	//设置redis缓存 hash类型
+	err := dao.Redis.HSet(context.Background(), key, a.StudentID, a.Answer).Err()
+	if err != nil {
+		log.Println("写入 Redis 失败:", err)
+	}
+}
+
+func MessageChat(msg []byte, client *WsClient, hub *WsHub, wsMsg *WsMessage) {
+	var a ChatMessage
+	if err := json.Unmarshal(wsMsg.Data, &a); err != nil {
+		log.Println("聊天消息解析失败:", err)
+		return
+	}
+	log.Println("内容:", a.Content)
+	resultMsg := map[string]interface{}{
+		"type": "chat_message",
+		"data": map[string]interface{}{
+			"user_id": utils.StringToInt64(a.UserID),
+			"content": a.Content,
+		},
+	}
+	log.Println("<UNK>:", resultMsg)
+	payload, _ := json.Marshal(resultMsg)
+
+	for client := range hub.Connections[utils.StringToInt64(a.CourseID)] {
+		client.SendCh <- payload
 	}
 }

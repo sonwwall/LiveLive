@@ -31,6 +31,7 @@ func (c *WsClient) ReadPump(hub *WsHub) {
 }
 
 func (c *WsClient) WritePump() {
+	//时刻监测通道有无消息
 	for msg := range c.SendCh {
 		err := c.Conn.WriteMessage(websocket.TextMessage, msg)
 		if err != nil {
