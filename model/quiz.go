@@ -22,3 +22,12 @@ type AnswerChoiceQuestion struct {
 	StudentID        int64 `gorm:"not null;uniqueIndex:uq_answer_question"`
 	Answer           *int
 }
+
+type AnsweredChoiceQuestion struct {
+	gorm.Model
+	ChoiceQuestionId uint           `gorm:"not null;uniqueIndex:uq_answer_question"`
+	Title            string         `gorm:"not null"`
+	Options          datatypes.JSON `gorm:"not null"`
+	Answer           int8
+	Accuracy         float64
+}

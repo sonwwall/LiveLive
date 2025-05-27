@@ -34,7 +34,7 @@ func MigrateLive(db *gorm.DB) {
 }
 
 func MigrateQuestion(db *gorm.DB) {
-	err := db.AutoMigrate(&ChoiceQuestion{}, &AnswerChoiceQuestion{})
+	err := db.AutoMigrate(&ChoiceQuestion{}, &AnswerChoiceQuestion{}, &AnsweredChoiceQuestion{})
 	if err != nil {
 		log.Errorf("迁移失败%s", err.Error())
 	}

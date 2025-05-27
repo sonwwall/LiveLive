@@ -2,6 +2,7 @@ package ws
 
 import (
 	dao "LiveLive/dao/rdb"
+	"LiveLive/utils"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -97,7 +98,20 @@ func HandleMessage(msg []byte, client *WsClient, hub *WsHub) {
 			log.Println("解析答题数据失败:", err)
 			return
 		}
-		key := fmt.Sprintf("answer:%s", a.QuestionID)
+		key := fmt.Sprintf("choice_answer:%s", a.QuestionID)
+		//检查是否提交过答案
+		exists, _ := dao.Redis.HExists(context.Background(), key, a.StudentID).Result()
+
+		if exists {
+
+			for client := range hub.Connections[utils.StringToInt64(a.CourseID)] {
+				if client.UserId == utils.StringToInt64(a.StudentID) {
+					client.SendCh <- []byte("您已提交过答案，无法再次提交")
+					return
+				}
+			}
+		}
+		//设置redis缓存 hash类型
 		err := dao.Redis.HSet(context.Background(), key, a.StudentID, a.Answer).Err()
 		if err != nil {
 			log.Println("写入 Redis 失败:", err)

@@ -140,6 +140,17 @@ func (s *LiveServiceImpl) WatchLive(ctx context.Context, req *live.WatchLiveReq)
 		return res, nil
 	}
 
+	_, err = db.FindCourseMemberByCourseIdAndStudentId(int64(course.ID), req.StudentId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		res := &live.WatchLiveResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrNoCoursePermission,
+				Msg:  "您未加入该课程！",
+			},
+		}
+		return res, nil
+	}
+
 	//baseURL := "localhost:8060"
 	//StreamKeyRow := fmt.Sprintf("teacher_%d,course_%d_%s", req.TeacherId, existCourse.ID, req.Classname)
 	uri := fmt.Sprintf("/live/teacher_%d_course_%d_%s.flv", teacher.ID, course.ID, req.Classname)
