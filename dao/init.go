@@ -69,6 +69,7 @@ func Init() {
 	model.MigrateCourseAndCourseMember(DB)
 	model.MigrateCourseInvite(DB)
 	model.MigrateQuestion(DB)
+	model.MigrateChatMessage(DB)
 
 	db.Mysql = DB
 	dao.Redis = Rdb

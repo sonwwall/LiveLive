@@ -6,9 +6,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/segmentio/kafka-go"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -140,7 +142,23 @@ func MessageChat(msg []byte, client *WsClient, hub *WsHub, wsMsg *WsMessage) {
 		log.Println("聊天消息解析失败:", err)
 		return
 	}
-	log.Println("内容:", a.Content)
+	kafkaWriter := kafka.Writer{
+		Addr:     kafka.TCP("localhost:9092"),
+		Topic:    "chat_messages",
+		Balancer: &kafka.LeastBytes{},
+	}
+	//开一个进程写入kafka
+	go func() {
+		err := kafkaWriter.WriteMessages(context.Background(),
+			kafka.Message{
+				Key:   []byte(a.CourseID),
+				Value: wsMsg.Data,
+				Time:  time.Now(),
+			})
+		if err != nil {
+			log.Println("写入 Kafka 失败:", err)
+		}
+	}()
 	resultMsg := map[string]interface{}{
 		"type": "chat_message",
 		"data": map[string]interface{}{
@@ -148,7 +166,6 @@ func MessageChat(msg []byte, client *WsClient, hub *WsHub, wsMsg *WsMessage) {
 			"content": a.Content,
 		},
 	}
-	log.Println("<UNK>:", resultMsg)
 	payload, _ := json.Marshal(resultMsg)
 
 	for client := range hub.Connections[utils.StringToInt64(a.CourseID)] {

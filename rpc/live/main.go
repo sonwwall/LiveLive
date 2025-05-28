@@ -2,6 +2,7 @@ package main
 
 import (
 	"LiveLive/dao"
+	"LiveLive/kafka/consumer"
 	live "LiveLive/kitex_gen/livelive/live/liveservice"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
@@ -12,6 +13,7 @@ import (
 
 func main() {
 	dao.Init()
+	go consumer.StartKafkaConsumerChat() //开启一个聊天的kafka进程
 
 	r, err := etcd.NewEtcdRegistry([]string{"127.0.0.1:2379"})
 	if err != nil {
