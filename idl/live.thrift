@@ -30,6 +30,7 @@ struct PublishRegisterReq{
     1:i64 teacher_id
     2:string classname
     3:string teacher_name
+    4:i64 deadline
 }
 
 struct PublishRegisterResp{

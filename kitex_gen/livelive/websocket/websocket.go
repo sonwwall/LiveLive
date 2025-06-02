@@ -160,10 +160,79 @@ var fieldIDToName_AggregateAnswersResp = map[int16]string{
 	1: "accuracy",
 }
 
+type CountRegisterReq struct {
+	CourseId int64 `thrift:"course_id,1" frugal:"1,default,i64" json:"course_id"`
+}
+
+func NewCountRegisterReq() *CountRegisterReq {
+	return &CountRegisterReq{}
+}
+
+func (p *CountRegisterReq) InitDefault() {
+}
+
+func (p *CountRegisterReq) GetCourseId() (v int64) {
+	return p.CourseId
+}
+func (p *CountRegisterReq) SetCourseId(val int64) {
+	p.CourseId = val
+}
+
+func (p *CountRegisterReq) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("CountRegisterReq(%+v)", *p)
+}
+
+var fieldIDToName_CountRegisterReq = map[int16]string{
+	1: "course_id",
+}
+
+type CountRegisterResp struct {
+	BaseResp *base.BaseResp `thrift:"baseResp,255" frugal:"255,default,base.BaseResp" json:"baseResp"`
+}
+
+func NewCountRegisterResp() *CountRegisterResp {
+	return &CountRegisterResp{}
+}
+
+func (p *CountRegisterResp) InitDefault() {
+}
+
+var CountRegisterResp_BaseResp_DEFAULT *base.BaseResp
+
+func (p *CountRegisterResp) GetBaseResp() (v *base.BaseResp) {
+	if !p.IsSetBaseResp() {
+		return CountRegisterResp_BaseResp_DEFAULT
+	}
+	return p.BaseResp
+}
+func (p *CountRegisterResp) SetBaseResp(val *base.BaseResp) {
+	p.BaseResp = val
+}
+
+func (p *CountRegisterResp) IsSetBaseResp() bool {
+	return p.BaseResp != nil
+}
+
+func (p *CountRegisterResp) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("CountRegisterResp(%+v)", *p)
+}
+
+var fieldIDToName_CountRegisterResp = map[int16]string{
+	255: "baseResp",
+}
+
 type WebsocketService interface {
 	BroadcastToCourse(ctx context.Context, req *BroadcastToCourseReq) (r *BroadcastToCourseResp, err error)
 
 	AggregateAnswers(ctx context.Context, req *AggregateAnswersReq) (r *AggregateAnswersResp, err error)
+
+	CountRegister(ctx context.Context, req *CountRegisterReq) (r *CountRegisterResp, err error)
 }
 
 type WebsocketServiceBroadcastToCourseArgs struct {
@@ -315,5 +384,81 @@ func (p *WebsocketServiceAggregateAnswersResult) String() string {
 }
 
 var fieldIDToName_WebsocketServiceAggregateAnswersResult = map[int16]string{
+	0: "success",
+}
+
+type WebsocketServiceCountRegisterArgs struct {
+	Req *CountRegisterReq `thrift:"req,1" frugal:"1,default,CountRegisterReq" json:"req"`
+}
+
+func NewWebsocketServiceCountRegisterArgs() *WebsocketServiceCountRegisterArgs {
+	return &WebsocketServiceCountRegisterArgs{}
+}
+
+func (p *WebsocketServiceCountRegisterArgs) InitDefault() {
+}
+
+var WebsocketServiceCountRegisterArgs_Req_DEFAULT *CountRegisterReq
+
+func (p *WebsocketServiceCountRegisterArgs) GetReq() (v *CountRegisterReq) {
+	if !p.IsSetReq() {
+		return WebsocketServiceCountRegisterArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+func (p *WebsocketServiceCountRegisterArgs) SetReq(val *CountRegisterReq) {
+	p.Req = val
+}
+
+func (p *WebsocketServiceCountRegisterArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *WebsocketServiceCountRegisterArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("WebsocketServiceCountRegisterArgs(%+v)", *p)
+}
+
+var fieldIDToName_WebsocketServiceCountRegisterArgs = map[int16]string{
+	1: "req",
+}
+
+type WebsocketServiceCountRegisterResult struct {
+	Success *CountRegisterResp `thrift:"success,0,optional" frugal:"0,optional,CountRegisterResp" json:"success,omitempty"`
+}
+
+func NewWebsocketServiceCountRegisterResult() *WebsocketServiceCountRegisterResult {
+	return &WebsocketServiceCountRegisterResult{}
+}
+
+func (p *WebsocketServiceCountRegisterResult) InitDefault() {
+}
+
+var WebsocketServiceCountRegisterResult_Success_DEFAULT *CountRegisterResp
+
+func (p *WebsocketServiceCountRegisterResult) GetSuccess() (v *CountRegisterResp) {
+	if !p.IsSetSuccess() {
+		return WebsocketServiceCountRegisterResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *WebsocketServiceCountRegisterResult) SetSuccess(x interface{}) {
+	p.Success = x.(*CountRegisterResp)
+}
+
+func (p *WebsocketServiceCountRegisterResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *WebsocketServiceCountRegisterResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("WebsocketServiceCountRegisterResult(%+v)", *p)
+}
+
+var fieldIDToName_WebsocketServiceCountRegisterResult = map[int16]string{
 	0: "success",
 }

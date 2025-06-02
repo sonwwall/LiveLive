@@ -200,6 +200,7 @@ type PublishRegisterReq struct {
 	TeacherId   int64  `thrift:"teacher_id,1" frugal:"1,default,i64" json:"teacher_id"`
 	Classname   string `thrift:"classname,2" frugal:"2,default,string" json:"classname"`
 	TeacherName string `thrift:"teacher_name,3" frugal:"3,default,string" json:"teacher_name"`
+	Deadline    int64  `thrift:"deadline,4" frugal:"4,default,i64" json:"deadline"`
 }
 
 func NewPublishRegisterReq() *PublishRegisterReq {
@@ -220,6 +221,10 @@ func (p *PublishRegisterReq) GetClassname() (v string) {
 func (p *PublishRegisterReq) GetTeacherName() (v string) {
 	return p.TeacherName
 }
+
+func (p *PublishRegisterReq) GetDeadline() (v int64) {
+	return p.Deadline
+}
 func (p *PublishRegisterReq) SetTeacherId(val int64) {
 	p.TeacherId = val
 }
@@ -228,6 +233,9 @@ func (p *PublishRegisterReq) SetClassname(val string) {
 }
 func (p *PublishRegisterReq) SetTeacherName(val string) {
 	p.TeacherName = val
+}
+func (p *PublishRegisterReq) SetDeadline(val int64) {
+	p.Deadline = val
 }
 
 func (p *PublishRegisterReq) String() string {
@@ -241,6 +249,7 @@ var fieldIDToName_PublishRegisterReq = map[int16]string{
 	1: "teacher_id",
 	2: "classname",
 	3: "teacher_name",
+	4: "deadline",
 }
 
 type PublishRegisterResp struct {

@@ -136,6 +136,7 @@ func PublishRegister(ctx context.Context, c *app.RequestContext) {
 	}
 	type PublishRegisterReq struct {
 		Classname string `json:"classname,required" form:"classname,required"`
+		Deadline  int64  `json:"deadline,required" form:"deadline,required"`
 	}
 	var req PublishRegisterReq
 	err := c.BindAndValidate(&req)
@@ -150,6 +151,7 @@ func PublishRegister(ctx context.Context, c *app.RequestContext) {
 		Classname:   req.Classname,
 		TeacherId:   int64(user.(*model.User).ID),
 		TeacherName: user.(*model.User).Username,
+		Deadline:    req.Deadline,
 	})
 	if result == nil {
 		c.JSON(200, response.Response{

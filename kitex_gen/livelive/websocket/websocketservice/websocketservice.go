@@ -27,6 +27,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"CountRegister": kitex.NewMethodInfo(
+		countRegisterHandler,
+		newWebsocketServiceCountRegisterArgs,
+		newWebsocketServiceCountRegisterResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -129,6 +136,24 @@ func newWebsocketServiceAggregateAnswersResult() interface{} {
 	return websocket.NewWebsocketServiceAggregateAnswersResult()
 }
 
+func countRegisterHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*websocket.WebsocketServiceCountRegisterArgs)
+	realResult := result.(*websocket.WebsocketServiceCountRegisterResult)
+	success, err := handler.(websocket.WebsocketService).CountRegister(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newWebsocketServiceCountRegisterArgs() interface{} {
+	return websocket.NewWebsocketServiceCountRegisterArgs()
+}
+
+func newWebsocketServiceCountRegisterResult() interface{} {
+	return websocket.NewWebsocketServiceCountRegisterResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -154,6 +179,16 @@ func (p *kClient) AggregateAnswers(ctx context.Context, req *websocket.Aggregate
 	_args.Req = req
 	var _result websocket.WebsocketServiceAggregateAnswersResult
 	if err = p.c.Call(ctx, "AggregateAnswers", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) CountRegister(ctx context.Context, req *websocket.CountRegisterReq) (r *websocket.CountRegisterResp, err error) {
+	var _args websocket.WebsocketServiceCountRegisterArgs
+	_args.Req = req
+	var _result websocket.WebsocketServiceCountRegisterResult
+	if err = p.c.Call(ctx, "CountRegister", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

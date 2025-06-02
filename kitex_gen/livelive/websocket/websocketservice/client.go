@@ -13,6 +13,7 @@ import (
 type Client interface {
 	BroadcastToCourse(ctx context.Context, req *websocket.BroadcastToCourseReq, callOptions ...callopt.Option) (r *websocket.BroadcastToCourseResp, err error)
 	AggregateAnswers(ctx context.Context, req *websocket.AggregateAnswersReq, callOptions ...callopt.Option) (r *websocket.AggregateAnswersResp, err error)
+	CountRegister(ctx context.Context, req *websocket.CountRegisterReq, callOptions ...callopt.Option) (r *websocket.CountRegisterResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -52,4 +53,9 @@ func (p *kWebsocketServiceClient) BroadcastToCourse(ctx context.Context, req *we
 func (p *kWebsocketServiceClient) AggregateAnswers(ctx context.Context, req *websocket.AggregateAnswersReq, callOptions ...callopt.Option) (r *websocket.AggregateAnswersResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.AggregateAnswers(ctx, req)
+}
+
+func (p *kWebsocketServiceClient) CountRegister(ctx context.Context, req *websocket.CountRegisterReq, callOptions ...callopt.Option) (r *websocket.CountRegisterResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.CountRegister(ctx, req)
 }

@@ -190,9 +190,20 @@ func (s *LiveServiceImpl) PublishRegister(ctx context.Context, req *live.Publish
 		}
 		return res, nil
 	}
+	course, err := db.FindCourseByClassnameAndTeacherId(req.Classname, req.TeacherId)
+	if err != nil {
+		res := &live.PublishRegisterResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrDB,
+				Msg:  "数据库错误::" + err.Error(),
+			},
+		}
+		return res, nil
+	}
 	pipe := dao.Redis.Pipeline() // 批量写入 Redis，提高性能
+	key := fmt.Sprintf("sign:course:%d", course.ID)
 	for _, member := range *students {
-		key := fmt.Sprintf("sign:course:%d", member.CourseId)
+
 		field := member.StudentName
 		pipe.HSet(context.Background(), key, field, 0)
 	}
@@ -214,19 +225,21 @@ func (s *LiveServiceImpl) PublishRegister(ctx context.Context, req *live.Publish
 		},
 	}
 	data, _ := json.Marshal(msg)
-	course, err := db.FindCourseByClassnameAndTeacherId(req.Classname, req.TeacherId)
-	if err != nil {
-		res := &live.PublishRegisterResp{
-			BaseResp: &base.BaseResp{
-				Code: code.ErrDB,
-				Msg:  "数据库错误::" + err.Error(),
-			},
-		}
-		return res, nil
-	}
+
 	s.wsClient.BroadcastToCourse(ctx, &websocket.BroadcastToCourseReq{
 		CourseId: int64(course.ID),
 		Data:     data,
+	})
+
+	//设置一个过期时间，统计完后自动过期
+	duration := 3 * time.Minute
+
+	//设置定时任务
+	time.AfterFunc(time.Duration(req.Deadline)*time.Second, func() {
+		s.wsClient.CountRegister(ctx, &websocket.CountRegisterReq{
+			CourseId: int64(course.ID),
+		})
+		dao.Redis.Expire(ctx, key, duration) //统计完三分钟后过期
 	})
 
 	res := &live.PublishRegisterResp{

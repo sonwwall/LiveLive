@@ -29,7 +29,7 @@ func (s *WebsocketServiceImpl) AggregateAnswers(ctx context.Context, req *websoc
 	data, err := dao.Redis.HGetAll(context.Background(), key).Result()
 	log.Println(data)
 	if err != nil {
-		log.Println("读取 Redis 答案失败:", err)
+		log.Println("读取 Redis 答案失败:", err.Error())
 		return &websocket.AggregateAnswersResp{
 			Accuracy: 0,
 		}, nil
@@ -69,7 +69,7 @@ func (s *WebsocketServiceImpl) AggregateAnswers(ctx context.Context, req *websoc
 	}
 	payload, _ := json.Marshal(resultMsg)
 
-	// 推送给当前课程下所有老师
+	// 推送给当前课程的老师
 	for client := range s.wsHub.Connections[req.CourseId] {
 		if client.Role == 0 {
 			client.SendCh <- payload
@@ -79,4 +79,47 @@ func (s *WebsocketServiceImpl) AggregateAnswers(ctx context.Context, req *websoc
 	return &websocket.AggregateAnswersResp{
 		Accuracy: accuracy,
 	}, nil
+}
+
+// CountRegister implements the WebsocketServiceImpl interface.
+func (s *WebsocketServiceImpl) CountRegister(ctx context.Context, req *websocket.CountRegisterReq) (resp *websocket.CountRegisterResp, err error) {
+	//从redis读
+	key := fmt.Sprintf("sign:course:%d", req.CourseId)
+	data, err := dao.Redis.HGetAll(context.Background(), key).Result()
+	log.Println(data)
+	if err != nil {
+		log.Println("读取 Redis 答案失败:", err.Error())
+		return &websocket.CountRegisterResp{}, nil
+	}
+	total := len(data)
+	signedIn := 0
+	unsignedFields := []string{}
+
+	for field, val := range data {
+		if val == "1" {
+			signedIn++
+		} else {
+			unsignedFields = append(unsignedFields, field)
+		}
+	}
+	resultMsg := map[string]interface{}{
+		"type": "register_result",
+		"data": map[string]interface{}{
+			"total": total,
+			"已签到人数": signedIn,
+			"未签到人数": total - signedIn,
+			"未签到学生": unsignedFields,
+		},
+	}
+	payload, _ := json.Marshal(resultMsg)
+
+	//推送给老师
+	for client := range s.wsHub.Connections[req.CourseId] {
+		if client.Role == 0 {
+			client.SendCh <- payload
+			break
+		}
+	}
+
+	return
 }

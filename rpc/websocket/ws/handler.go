@@ -37,6 +37,12 @@ type ChatMessage struct {
 	Content  string `json:"content"`
 }
 
+type RegisterMessage struct {
+	UserID   string `json:"user_id"`
+	Username string `json:"username"`
+	CourseID string `json:"course_id"`
+}
+
 func NewHandler(hub *WsHub) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		courseIDStr := r.URL.Query().Get("course_id")
@@ -103,8 +109,11 @@ func HandleMessage(msg []byte, client *WsClient, hub *WsHub) {
 	case "choice_answer":
 		MessageChoiceQuestion(msg, client, hub, &wsMsg)
 	case "chat":
-		log.Println(wsMsg.Type, wsMsg.Data)
+
 		MessageChat(msg, client, hub, &wsMsg)
+	case "register":
+		MessageRegister(msg, client, hub, &wsMsg)
+
 	default:
 		log.Println("未知类型:", wsMsg.Type)
 	}
@@ -171,4 +180,16 @@ func MessageChat(msg []byte, client *WsClient, hub *WsHub, wsMsg *WsMessage) {
 	for client := range hub.Connections[utils.StringToInt64(a.CourseID)] {
 		client.SendCh <- payload
 	}
+}
+
+func MessageRegister(msg []byte, client *WsClient, hub *WsHub, wsMsg *WsMessage) {
+	var a RegisterMessage
+	if err := json.Unmarshal(wsMsg.Data, &a); err != nil {
+		log.Println("签到消息解析失败:", err.Error())
+		return
+	}
+	key := fmt.Sprintf("sign:course:%s", a.CourseID)
+	//修改状态为1，表示已签到
+	dao.Redis.HSet(context.Background(), key, a.Username, 1)
+
 }
