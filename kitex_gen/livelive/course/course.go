@@ -98,6 +98,7 @@ type JoinCourseReq struct {
 	Classname      string `thrift:"classname,2" frugal:"2,default,string" json:"classname"`
 	InvitationCode string `thrift:"invitation_code,3" frugal:"3,default,string" json:"invitation_code"`
 	TeacherName    string `thrift:"teacher_name,4" frugal:"4,default,string" json:"teacher_name"`
+	StudentName    string `thrift:"student_name,5" frugal:"5,default,string" json:"student_name"`
 }
 
 func NewJoinCourseReq() *JoinCourseReq {
@@ -122,6 +123,10 @@ func (p *JoinCourseReq) GetInvitationCode() (v string) {
 func (p *JoinCourseReq) GetTeacherName() (v string) {
 	return p.TeacherName
 }
+
+func (p *JoinCourseReq) GetStudentName() (v string) {
+	return p.StudentName
+}
 func (p *JoinCourseReq) SetStudentId(val int64) {
 	p.StudentId = val
 }
@@ -133,6 +138,9 @@ func (p *JoinCourseReq) SetInvitationCode(val string) {
 }
 func (p *JoinCourseReq) SetTeacherName(val string) {
 	p.TeacherName = val
+}
+func (p *JoinCourseReq) SetStudentName(val string) {
+	p.StudentName = val
 }
 
 func (p *JoinCourseReq) String() string {
@@ -147,6 +155,7 @@ var fieldIDToName_JoinCourseReq = map[int16]string{
 	2: "classname",
 	3: "invitation_code",
 	4: "teacher_name",
+	5: "student_name",
 }
 
 type JoinCourseResp struct {

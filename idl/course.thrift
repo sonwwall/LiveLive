@@ -19,6 +19,7 @@ struct JoinCourseReq{
     2:string classname
     3:string invitation_code
     4:string teacher_name
+    5:string student_name
 }
 
 struct JoinCourseResp{

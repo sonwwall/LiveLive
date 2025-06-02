@@ -137,6 +137,7 @@ func JoinCourse(ctx context.Context, c *app.RequestContext) {
 		StudentId:      int64(user.(*model.User).Model.ID),
 		InvitationCode: req.InvitationCode,
 		TeacherName:    req.TeacherName,
+		StudentName:    user.(*model.User).Username,
 	})
 	if result == nil {
 		c.JSON(200, response.Response{

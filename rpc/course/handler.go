@@ -119,7 +119,14 @@ func (s *CourseServiceImpl) JoinCourse(ctx context.Context, req *course.JoinCour
 		return res, nil
 	}
 
-	joincourse := &model.CourseMember{Classname: req.Classname, StudentId: int(req.StudentId), CourseId: int(existcourse.ID), JoinedAt: time.Now()}
+	joincourse := &model.CourseMember{
+		Classname:   req.Classname,
+		StudentId:   int(req.StudentId),
+		CourseId:    int(existcourse.ID),
+		JoinedAt:    time.Now(),
+		StudentName: req.StudentName,
+		TeacherName: req.TeacherName,
+	}
 	err = db.AddStudentCourse(joincourse)
 	if err != nil {
 		res := &course.JoinCourseResp{

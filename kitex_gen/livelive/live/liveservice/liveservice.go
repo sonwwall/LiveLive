@@ -27,6 +27,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"PublishRegister": kitex.NewMethodInfo(
+		publishRegisterHandler,
+		newLiveServicePublishRegisterArgs,
+		newLiveServicePublishRegisterResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -129,6 +136,24 @@ func newLiveServiceWatchLiveResult() interface{} {
 	return live.NewLiveServiceWatchLiveResult()
 }
 
+func publishRegisterHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*live.LiveServicePublishRegisterArgs)
+	realResult := result.(*live.LiveServicePublishRegisterResult)
+	success, err := handler.(live.LiveService).PublishRegister(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newLiveServicePublishRegisterArgs() interface{} {
+	return live.NewLiveServicePublishRegisterArgs()
+}
+
+func newLiveServicePublishRegisterResult() interface{} {
+	return live.NewLiveServicePublishRegisterResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -154,6 +179,16 @@ func (p *kClient) WatchLive(ctx context.Context, req *live.WatchLiveReq) (r *liv
 	_args.Req = req
 	var _result live.LiveServiceWatchLiveResult
 	if err = p.c.Call(ctx, "WatchLive", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) PublishRegister(ctx context.Context, req *live.PublishRegisterReq) (r *live.PublishRegisterResp, err error) {
+	var _args live.LiveServicePublishRegisterArgs
+	_args.Req = req
+	var _result live.LiveServicePublishRegisterResult
+	if err = p.c.Call(ctx, "PublishRegister", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

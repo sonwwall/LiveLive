@@ -31,3 +31,7 @@ func GetStreamKey(ctx context.Context, req *live.GetStreamKeyReq) (*live.GetStre
 func WatchLive(ctx context.Context, req *live.WatchLiveReq) (*live.WatchLiveResp, error) {
 	return liveClient.WatchLive(ctx, req)
 }
+
+func PublishRegister(ctx context.Context, req *live.PublishRegisterReq) (*live.PublishRegisterResp, error) {
+	return liveClient.PublishRegister(ctx, req)
+}

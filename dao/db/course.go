@@ -51,3 +51,9 @@ func FindCourseMemberByCourseIdAndStudentId(courseId int64, studentId int64) (*m
 	err := Mysql.Where("course_id = ? AND student_id = ?", courseId, studentId).First(&courseMember).Error
 	return &courseMember, err
 }
+
+func FindStudentByTeacherNameAndClassName(teacherName string, ClassName string) (*[]model.CourseMember, error) {
+	var students []model.CourseMember
+	err := Mysql.Where("classname = ? AND teacher_name = ?", ClassName, teacherName).Find(&students).Error
+	return &students, err
+}

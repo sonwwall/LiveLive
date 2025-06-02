@@ -2,44 +2,42 @@ package main
 
 import (
 	"LiveLive/dao"
-	quiz "LiveLive/kitex_gen/livelive/quiz/quizservice"
 	websocket "LiveLive/kitex_gen/livelive/websocket/websocketservice"
-	"github.com/cloudwego/kitex/client"
+	ws2 "LiveLive/rpc/websocket/ws"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
 	etcd "github.com/kitex-contrib/registry-etcd"
 	"log"
 	"net"
+	"net/http"
 )
 
 func main() {
 	dao.Init()
 
-	//连接websocketRPC
-	ws_r, err := etcd.NewEtcdResolver([]string{"127.0.0.1:2379"})
-	if err != nil {
-		panic(err)
-	}
-	ws_c, err := websocket.NewClient("livelive.websocket", client.WithResolver(ws_r))
-	if err != nil {
-		panic(err)
-	}
+	//创建并连接上websocket服务器
+	hub := ws2.NewHub()
+	go func() {
+		http.HandleFunc("/ws", ws2.NewHandler(hub))
+		log.Println("WebSocket server started on :8060")
+		log.Fatal(http.ListenAndServe(":8060", nil))
+	}()
 
 	r, err := etcd.NewEtcdRegistry([]string{"127.0.0.1:2379"})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	quizServiceImpl := new(QuizServiceImpl) //impl实现
-	quizServiceImpl.wsClient = ws_c
+	websocketServiceImpl := new(WebsocketServiceImpl) //impl实现
+	websocketServiceImpl.wsHub = hub
 
-	addr, _ := net.ResolveTCPAddr("tcp", "127.0.0.1:8891")
-	svr := quiz.NewServer(quizServiceImpl,
+	addr, _ := net.ResolveTCPAddr("tcp", "127.0.0.1:8892")
+	svr := websocket.NewServer(websocketServiceImpl,
 		server.WithRegistry(r),
 		server.WithServiceAddr(addr),
 		server.WithServerBasicInfo(
 			&rpcinfo.EndpointBasicInfo{
-				ServiceName: "livelive.quiz",
+				ServiceName: "livelive.websocket",
 			}),
 	)
 

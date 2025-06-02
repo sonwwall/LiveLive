@@ -196,10 +196,97 @@ var fieldIDToName_WatchLiveResp = map[int16]string{
 	255: "baseResp",
 }
 
+type PublishRegisterReq struct {
+	TeacherId   int64  `thrift:"teacher_id,1" frugal:"1,default,i64" json:"teacher_id"`
+	Classname   string `thrift:"classname,2" frugal:"2,default,string" json:"classname"`
+	TeacherName string `thrift:"teacher_name,3" frugal:"3,default,string" json:"teacher_name"`
+}
+
+func NewPublishRegisterReq() *PublishRegisterReq {
+	return &PublishRegisterReq{}
+}
+
+func (p *PublishRegisterReq) InitDefault() {
+}
+
+func (p *PublishRegisterReq) GetTeacherId() (v int64) {
+	return p.TeacherId
+}
+
+func (p *PublishRegisterReq) GetClassname() (v string) {
+	return p.Classname
+}
+
+func (p *PublishRegisterReq) GetTeacherName() (v string) {
+	return p.TeacherName
+}
+func (p *PublishRegisterReq) SetTeacherId(val int64) {
+	p.TeacherId = val
+}
+func (p *PublishRegisterReq) SetClassname(val string) {
+	p.Classname = val
+}
+func (p *PublishRegisterReq) SetTeacherName(val string) {
+	p.TeacherName = val
+}
+
+func (p *PublishRegisterReq) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("PublishRegisterReq(%+v)", *p)
+}
+
+var fieldIDToName_PublishRegisterReq = map[int16]string{
+	1: "teacher_id",
+	2: "classname",
+	3: "teacher_name",
+}
+
+type PublishRegisterResp struct {
+	BaseResp *base.BaseResp `thrift:"baseResp,255" frugal:"255,default,base.BaseResp" json:"baseResp"`
+}
+
+func NewPublishRegisterResp() *PublishRegisterResp {
+	return &PublishRegisterResp{}
+}
+
+func (p *PublishRegisterResp) InitDefault() {
+}
+
+var PublishRegisterResp_BaseResp_DEFAULT *base.BaseResp
+
+func (p *PublishRegisterResp) GetBaseResp() (v *base.BaseResp) {
+	if !p.IsSetBaseResp() {
+		return PublishRegisterResp_BaseResp_DEFAULT
+	}
+	return p.BaseResp
+}
+func (p *PublishRegisterResp) SetBaseResp(val *base.BaseResp) {
+	p.BaseResp = val
+}
+
+func (p *PublishRegisterResp) IsSetBaseResp() bool {
+	return p.BaseResp != nil
+}
+
+func (p *PublishRegisterResp) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("PublishRegisterResp(%+v)", *p)
+}
+
+var fieldIDToName_PublishRegisterResp = map[int16]string{
+	255: "baseResp",
+}
+
 type LiveService interface {
 	GetStreamKey(ctx context.Context, req *GetStreamKeyReq) (r *GetStreamKeyResp, err error)
 
 	WatchLive(ctx context.Context, req *WatchLiveReq) (r *WatchLiveResp, err error)
+
+	PublishRegister(ctx context.Context, req *PublishRegisterReq) (r *PublishRegisterResp, err error)
 }
 
 type LiveServiceGetStreamKeyArgs struct {
@@ -351,5 +438,81 @@ func (p *LiveServiceWatchLiveResult) String() string {
 }
 
 var fieldIDToName_LiveServiceWatchLiveResult = map[int16]string{
+	0: "success",
+}
+
+type LiveServicePublishRegisterArgs struct {
+	Req *PublishRegisterReq `thrift:"req,1" frugal:"1,default,PublishRegisterReq" json:"req"`
+}
+
+func NewLiveServicePublishRegisterArgs() *LiveServicePublishRegisterArgs {
+	return &LiveServicePublishRegisterArgs{}
+}
+
+func (p *LiveServicePublishRegisterArgs) InitDefault() {
+}
+
+var LiveServicePublishRegisterArgs_Req_DEFAULT *PublishRegisterReq
+
+func (p *LiveServicePublishRegisterArgs) GetReq() (v *PublishRegisterReq) {
+	if !p.IsSetReq() {
+		return LiveServicePublishRegisterArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+func (p *LiveServicePublishRegisterArgs) SetReq(val *PublishRegisterReq) {
+	p.Req = val
+}
+
+func (p *LiveServicePublishRegisterArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *LiveServicePublishRegisterArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("LiveServicePublishRegisterArgs(%+v)", *p)
+}
+
+var fieldIDToName_LiveServicePublishRegisterArgs = map[int16]string{
+	1: "req",
+}
+
+type LiveServicePublishRegisterResult struct {
+	Success *PublishRegisterResp `thrift:"success,0,optional" frugal:"0,optional,PublishRegisterResp" json:"success,omitempty"`
+}
+
+func NewLiveServicePublishRegisterResult() *LiveServicePublishRegisterResult {
+	return &LiveServicePublishRegisterResult{}
+}
+
+func (p *LiveServicePublishRegisterResult) InitDefault() {
+}
+
+var LiveServicePublishRegisterResult_Success_DEFAULT *PublishRegisterResp
+
+func (p *LiveServicePublishRegisterResult) GetSuccess() (v *PublishRegisterResp) {
+	if !p.IsSetSuccess() {
+		return LiveServicePublishRegisterResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *LiveServicePublishRegisterResult) SetSuccess(x interface{}) {
+	p.Success = x.(*PublishRegisterResp)
+}
+
+func (p *LiveServicePublishRegisterResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *LiveServicePublishRegisterResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("LiveServicePublishRegisterResult(%+v)", *p)
+}
+
+var fieldIDToName_LiveServicePublishRegisterResult = map[int16]string{
 	0: "success",
 }

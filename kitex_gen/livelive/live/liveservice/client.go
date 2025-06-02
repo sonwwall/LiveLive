@@ -13,6 +13,7 @@ import (
 type Client interface {
 	GetStreamKey(ctx context.Context, req *live.GetStreamKeyReq, callOptions ...callopt.Option) (r *live.GetStreamKeyResp, err error)
 	WatchLive(ctx context.Context, req *live.WatchLiveReq, callOptions ...callopt.Option) (r *live.WatchLiveResp, err error)
+	PublishRegister(ctx context.Context, req *live.PublishRegisterReq, callOptions ...callopt.Option) (r *live.PublishRegisterResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -52,4 +53,9 @@ func (p *kLiveServiceClient) GetStreamKey(ctx context.Context, req *live.GetStre
 func (p *kLiveServiceClient) WatchLive(ctx context.Context, req *live.WatchLiveReq, callOptions ...callopt.Option) (r *live.WatchLiveResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.WatchLive(ctx, req)
+}
+
+func (p *kLiveServiceClient) PublishRegister(ctx context.Context, req *live.PublishRegisterReq, callOptions ...callopt.Option) (r *live.PublishRegisterResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.PublishRegister(ctx, req)
 }

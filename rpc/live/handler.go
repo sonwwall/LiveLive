@@ -2,12 +2,16 @@ package main
 
 import (
 	"LiveLive/dao/db"
+	dao "LiveLive/dao/rdb"
 	"LiveLive/kitex_gen/livelive/base"
 	live "LiveLive/kitex_gen/livelive/live"
+	"LiveLive/kitex_gen/livelive/websocket"
+	"LiveLive/kitex_gen/livelive/websocket/websocketservice"
 	"LiveLive/model"
 	"LiveLive/rpc/live/code"
 	"LiveLive/utils"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
@@ -16,7 +20,9 @@ import (
 )
 
 // LiveServiceImpl implements the last service interface defined in the IDL.
-type LiveServiceImpl struct{}
+type LiveServiceImpl struct {
+	wsClient websocketservice.Client
+}
 
 // GetStreamKey implements the LiveServiceImpl interface.
 func (s *LiveServiceImpl) GetStreamKey(ctx context.Context, req *live.GetStreamKeyReq) (resp *live.GetStreamKeyResp, err error) {
@@ -169,4 +175,65 @@ func (s *LiveServiceImpl) WatchLive(ctx context.Context, req *live.WatchLiveReq)
 	}
 	return res, nil
 
+}
+
+// PublishRegister 签到
+// PublishRegister implements the LiveServiceImpl interface.
+func (s *LiveServiceImpl) PublishRegister(ctx context.Context, req *live.PublishRegisterReq) (resp *live.PublishRegisterResp, err error) {
+	students, err := db.FindStudentByTeacherNameAndClassName(req.TeacherName, req.Classname)
+	if err != nil {
+		res := &live.PublishRegisterResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrDB,
+				Msg:  "数据库错误:" + err.Error(),
+			},
+		}
+		return res, nil
+	}
+	pipe := dao.Redis.Pipeline() // 批量写入 Redis，提高性能
+	for _, member := range *students {
+		key := fmt.Sprintf("sign:course:%d", member.CourseId)
+		field := member.StudentName
+		pipe.HSet(context.Background(), key, field, 0)
+	}
+	//写入
+	_, err = pipe.Exec(context.Background())
+	if err != nil {
+		res := &live.PublishRegisterResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrDB,
+				Msg:  "Redis写入错误:" + err.Error(),
+			},
+		}
+		return res, nil
+	}
+	msg := map[string]interface{}{
+		"type": "register",
+		"data": map[string]interface{}{
+			"code": 1,
+		},
+	}
+	data, _ := json.Marshal(msg)
+	course, err := db.FindCourseByClassnameAndTeacherId(req.Classname, req.TeacherId)
+	if err != nil {
+		res := &live.PublishRegisterResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrDB,
+				Msg:  "数据库错误::" + err.Error(),
+			},
+		}
+		return res, nil
+	}
+	s.wsClient.BroadcastToCourse(ctx, &websocket.BroadcastToCourseReq{
+		CourseId: int64(course.ID),
+		Data:     data,
+	})
+
+	res := &live.PublishRegisterResp{
+		BaseResp: &base.BaseResp{
+			Code: 0,
+			Msg:  "ok",
+		},
+	}
+	return res, nil
 }

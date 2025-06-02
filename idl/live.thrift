@@ -26,7 +26,19 @@ struct WatchLiveResp{
     255:base.BaseResp baseResp
 }
 
+struct PublishRegisterReq{
+    1:i64 teacher_id
+    2:string classname
+    3:string teacher_name
+}
+
+struct PublishRegisterResp{
+
+    255:base.BaseResp baseResp
+}
+
 service LiveService{
     GetStreamKeyResp GetStreamKey(1:GetStreamKeyReq req)
     WatchLiveResp WatchLive(1:WatchLiveReq req)
+    PublishRegisterResp PublishRegister(1:PublishRegisterReq req)
 }

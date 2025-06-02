@@ -5,9 +5,10 @@ import (
 	dao "LiveLive/dao/rdb"
 	"LiveLive/kitex_gen/livelive/base"
 	quiz "LiveLive/kitex_gen/livelive/quiz"
+	"LiveLive/kitex_gen/livelive/websocket"
+	"LiveLive/kitex_gen/livelive/websocket/websocketservice"
 	"LiveLive/model"
 	"LiveLive/utils"
-	"LiveLive/ws"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -18,7 +19,7 @@ import (
 
 // QuizServiceImpl implements the last service interface defined in the IDL.
 type QuizServiceImpl struct {
-	wsHub *ws.WsHub
+	wsClient websocketservice.Client
 }
 
 // PublishChoiceQuestion implements the QuizServiceImpl interface.
@@ -47,7 +48,11 @@ func (s *QuizServiceImpl) PublishChoiceQuestion(ctx context.Context, req *quiz.P
 		},
 	}
 	data, _ := json.Marshal(msg)
-	s.wsHub.BroadcastToCourse(req.CourseId, data)
+	//广播给所有学生
+	s.wsClient.BroadcastToCourse(ctx, &websocket.BroadcastToCourseReq{
+		CourseId: req.CourseId,
+		Data:     data,
+	})
 
 	//设置一个过期时间，统计完后自动过期
 	duration := 3 * time.Minute
@@ -56,14 +61,18 @@ func (s *QuizServiceImpl) PublishChoiceQuestion(ctx context.Context, req *quiz.P
 
 	//设置定时任务,到时间自动返回统计结果
 	time.AfterFunc(time.Unix(req.Deadline, 0).Sub(time.Now()), func() {
-		accuracy := AggregateAnswers(int64(questionId), req.CourseId, s.wsHub, req.Answer)
+		result, _ := s.wsClient.AggregateAnswers(ctx, &websocket.AggregateAnswersReq{
+			QuestionId:    int64(questionId),
+			CourseId:      req.CourseId,
+			CorrectAnswer: req.Answer,
+		})
 		dao.Redis.Expire(ctx, key, duration) //统计完三分钟后自动清除redis缓存
 		answeredChoiceQuestion := &model.AnsweredChoiceQuestion{
 			ChoiceQuestionId: questionId,
 			Title:            req.Title,
 			Options:          datatypes.JSON(optsJson),
 			Answer:           req.Answer,
-			Accuracy:         accuracy,
+			Accuracy:         result.Accuracy,
 		}
 
 		_ = db.AddAnsweredChoiceQuestion(answeredChoiceQuestion)
@@ -79,57 +88,57 @@ func (s *QuizServiceImpl) PublishChoiceQuestion(ctx context.Context, req *quiz.P
 
 }
 
-// AggregateAnswers 答案统计与推送逻辑
-func AggregateAnswers(questionID, courseID int64, hub *ws.WsHub, correctAnswerInt int8) float64 {
-	//从redis读出保存的答案
-	key := fmt.Sprintf("choice_answer:%d", questionID)
-	data, err := dao.Redis.HGetAll(context.Background(), key).Result()
-	log.Println(data)
-	if err != nil {
-		log.Println("读取 Redis 答案失败:", err)
-		return 0
-	}
-
-	// 统计答案分布
-	count := map[string]int{}
-	sum := 0
-	var correctAnswer string
-	for _, answer := range data {
-		count[answer]++
-		sum++
-	}
-	switch correctAnswerInt {
-	case 0:
-		correctAnswer = "A"
-	case 1:
-		correctAnswer = "B"
-	case 2:
-		correctAnswer = "C"
-	case 3:
-		correctAnswer = "D"
-	default:
-		correctAnswer = ""
-	}
-	//统计正确率
-	accuracy := (float64(count[correctAnswer]) / float64(sum)) * 100
-
-	// 构造结果消息
-	resultMsg := map[string]interface{}{
-		"type": "answer_result",
-		"data": map[string]interface{}{
-			"question_id": questionID,
-			"summary":     count,
-			"accuracy":    fmt.Sprintf("%.2f%s", accuracy, "%"),
-		},
-	}
-	payload, _ := json.Marshal(resultMsg)
-
-	// 推送给当前课程下所有老师
-	for client := range hub.Connections[courseID] {
-		if client.Role == 0 {
-			client.SendCh <- payload
-			break
-		}
-	}
-	return accuracy
-}
+//// AggregateAnswers 答案统计与推送逻辑
+//func AggregateAnswers(questionID, courseID int64, hub *ws.WsHub, correctAnswerInt int8) float64 {
+//	//从redis读出保存的答案
+//	key := fmt.Sprintf("choice_answer:%d", questionID)
+//	data, err := dao.Redis.HGetAll(context.Background(), key).Result()
+//	log.Println(data)
+//	if err != nil {
+//		log.Println("读取 Redis 答案失败:", err)
+//		return 0
+//	}
+//
+//	// 统计答案分布
+//	count := map[string]int{}
+//	sum := 0
+//	var correctAnswer string
+//	for _, answer := range data {
+//		count[answer]++
+//		sum++
+//	}
+//	switch correctAnswerInt {
+//	case 0:
+//		correctAnswer = "A"
+//	case 1:
+//		correctAnswer = "B"
+//	case 2:
+//		correctAnswer = "C"
+//	case 3:
+//		correctAnswer = "D"
+//	default:
+//		correctAnswer = ""
+//	}
+//	//统计正确率
+//	accuracy := (float64(count[correctAnswer]) / float64(sum)) * 100
+//
+//	// 构造结果消息
+//	resultMsg := map[string]interface{}{
+//		"type": "answer_result",
+//		"data": map[string]interface{}{
+//			"question_id": questionID,
+//			"summary":     count,
+//			"accuracy":    fmt.Sprintf("%.2f%s", accuracy, "%"),
+//		},
+//	}
+//	payload, _ := json.Marshal(resultMsg)
+//
+//	// 推送给当前课程下所有老师
+//	for client := range hub.Connections[courseID] {
+//		if client.Role == 0 {
+//			client.SendCh <- payload
+//			break
+//		}
+//	}
+//	return accuracy
+//}
