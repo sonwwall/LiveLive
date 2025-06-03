@@ -30,6 +30,8 @@ func main() {
 	teacher.GET("/streamKey", handlers.GetStreamKey)
 	teacher.POST("/choice_question", handlers.PublishChoiceQuestion)
 	teacher.POST("/publish_register", handlers.PublishRegister)
+	teacher.POST("/start_recording", handlers.StartRecording)
+	teacher.POST("/stop_recording", handlers.StopRecording)
 
 	student := auth.Group("/student")
 	student.POST("/join_course", handlers.JoinCourse)

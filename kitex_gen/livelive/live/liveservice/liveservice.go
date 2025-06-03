@@ -34,6 +34,20 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"StartRecording": kitex.NewMethodInfo(
+		startRecordingHandler,
+		newLiveServiceStartRecordingArgs,
+		newLiveServiceStartRecordingResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
+	"StopRecording": kitex.NewMethodInfo(
+		stopRecordingHandler,
+		newLiveServiceStopRecordingArgs,
+		newLiveServiceStopRecordingResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -154,6 +168,42 @@ func newLiveServicePublishRegisterResult() interface{} {
 	return live.NewLiveServicePublishRegisterResult()
 }
 
+func startRecordingHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*live.LiveServiceStartRecordingArgs)
+	realResult := result.(*live.LiveServiceStartRecordingResult)
+	success, err := handler.(live.LiveService).StartRecording(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newLiveServiceStartRecordingArgs() interface{} {
+	return live.NewLiveServiceStartRecordingArgs()
+}
+
+func newLiveServiceStartRecordingResult() interface{} {
+	return live.NewLiveServiceStartRecordingResult()
+}
+
+func stopRecordingHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*live.LiveServiceStopRecordingArgs)
+	realResult := result.(*live.LiveServiceStopRecordingResult)
+	success, err := handler.(live.LiveService).StopRecording(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newLiveServiceStopRecordingArgs() interface{} {
+	return live.NewLiveServiceStopRecordingArgs()
+}
+
+func newLiveServiceStopRecordingResult() interface{} {
+	return live.NewLiveServiceStopRecordingResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -189,6 +239,26 @@ func (p *kClient) PublishRegister(ctx context.Context, req *live.PublishRegister
 	_args.Req = req
 	var _result live.LiveServicePublishRegisterResult
 	if err = p.c.Call(ctx, "PublishRegister", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) StartRecording(ctx context.Context, req *live.StartRecordingReq) (r *live.StartRecordingResp, err error) {
+	var _args live.LiveServiceStartRecordingArgs
+	_args.Req = req
+	var _result live.LiveServiceStartRecordingResult
+	if err = p.c.Call(ctx, "StartRecording", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) StopRecording(ctx context.Context, req *live.StopRecordingReq) (r *live.StopRecordingResp, err error) {
+	var _args live.LiveServiceStopRecordingArgs
+	_args.Req = req
+	var _result live.LiveServiceStopRecordingResult
+	if err = p.c.Call(ctx, "StopRecording", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

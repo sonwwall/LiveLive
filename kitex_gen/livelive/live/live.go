@@ -290,12 +290,186 @@ var fieldIDToName_PublishRegisterResp = map[int16]string{
 	255: "baseResp",
 }
 
+type StartRecordingReq struct {
+	TeacherId int64  `thrift:"teacher_id,1" frugal:"1,default,i64" json:"teacher_id"`
+	CourseId  int64  `thrift:"course_id,2" frugal:"2,default,i64" json:"course_id"`
+	Classname string `thrift:"classname,3" frugal:"3,default,string" json:"classname"`
+}
+
+func NewStartRecordingReq() *StartRecordingReq {
+	return &StartRecordingReq{}
+}
+
+func (p *StartRecordingReq) InitDefault() {
+}
+
+func (p *StartRecordingReq) GetTeacherId() (v int64) {
+	return p.TeacherId
+}
+
+func (p *StartRecordingReq) GetCourseId() (v int64) {
+	return p.CourseId
+}
+
+func (p *StartRecordingReq) GetClassname() (v string) {
+	return p.Classname
+}
+func (p *StartRecordingReq) SetTeacherId(val int64) {
+	p.TeacherId = val
+}
+func (p *StartRecordingReq) SetCourseId(val int64) {
+	p.CourseId = val
+}
+func (p *StartRecordingReq) SetClassname(val string) {
+	p.Classname = val
+}
+
+func (p *StartRecordingReq) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("StartRecordingReq(%+v)", *p)
+}
+
+var fieldIDToName_StartRecordingReq = map[int16]string{
+	1: "teacher_id",
+	2: "course_id",
+	3: "classname",
+}
+
+type StartRecordingResp struct {
+	BaseResp *base.BaseResp `thrift:"baseResp,255" frugal:"255,default,base.BaseResp" json:"baseResp"`
+}
+
+func NewStartRecordingResp() *StartRecordingResp {
+	return &StartRecordingResp{}
+}
+
+func (p *StartRecordingResp) InitDefault() {
+}
+
+var StartRecordingResp_BaseResp_DEFAULT *base.BaseResp
+
+func (p *StartRecordingResp) GetBaseResp() (v *base.BaseResp) {
+	if !p.IsSetBaseResp() {
+		return StartRecordingResp_BaseResp_DEFAULT
+	}
+	return p.BaseResp
+}
+func (p *StartRecordingResp) SetBaseResp(val *base.BaseResp) {
+	p.BaseResp = val
+}
+
+func (p *StartRecordingResp) IsSetBaseResp() bool {
+	return p.BaseResp != nil
+}
+
+func (p *StartRecordingResp) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("StartRecordingResp(%+v)", *p)
+}
+
+var fieldIDToName_StartRecordingResp = map[int16]string{
+	255: "baseResp",
+}
+
+type StopRecordingReq struct {
+	TeacherId int64  `thrift:"teacher_id,1" frugal:"1,default,i64" json:"teacher_id"`
+	CourseId  int64  `thrift:"course_id,2" frugal:"2,default,i64" json:"course_id"`
+	Classname string `thrift:"classname,3" frugal:"3,default,string" json:"classname"`
+}
+
+func NewStopRecordingReq() *StopRecordingReq {
+	return &StopRecordingReq{}
+}
+
+func (p *StopRecordingReq) InitDefault() {
+}
+
+func (p *StopRecordingReq) GetTeacherId() (v int64) {
+	return p.TeacherId
+}
+
+func (p *StopRecordingReq) GetCourseId() (v int64) {
+	return p.CourseId
+}
+
+func (p *StopRecordingReq) GetClassname() (v string) {
+	return p.Classname
+}
+func (p *StopRecordingReq) SetTeacherId(val int64) {
+	p.TeacherId = val
+}
+func (p *StopRecordingReq) SetCourseId(val int64) {
+	p.CourseId = val
+}
+func (p *StopRecordingReq) SetClassname(val string) {
+	p.Classname = val
+}
+
+func (p *StopRecordingReq) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("StopRecordingReq(%+v)", *p)
+}
+
+var fieldIDToName_StopRecordingReq = map[int16]string{
+	1: "teacher_id",
+	2: "course_id",
+	3: "classname",
+}
+
+type StopRecordingResp struct {
+	BaseResp *base.BaseResp `thrift:"baseResp,255" frugal:"255,default,base.BaseResp" json:"baseResp"`
+}
+
+func NewStopRecordingResp() *StopRecordingResp {
+	return &StopRecordingResp{}
+}
+
+func (p *StopRecordingResp) InitDefault() {
+}
+
+var StopRecordingResp_BaseResp_DEFAULT *base.BaseResp
+
+func (p *StopRecordingResp) GetBaseResp() (v *base.BaseResp) {
+	if !p.IsSetBaseResp() {
+		return StopRecordingResp_BaseResp_DEFAULT
+	}
+	return p.BaseResp
+}
+func (p *StopRecordingResp) SetBaseResp(val *base.BaseResp) {
+	p.BaseResp = val
+}
+
+func (p *StopRecordingResp) IsSetBaseResp() bool {
+	return p.BaseResp != nil
+}
+
+func (p *StopRecordingResp) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("StopRecordingResp(%+v)", *p)
+}
+
+var fieldIDToName_StopRecordingResp = map[int16]string{
+	255: "baseResp",
+}
+
 type LiveService interface {
 	GetStreamKey(ctx context.Context, req *GetStreamKeyReq) (r *GetStreamKeyResp, err error)
 
 	WatchLive(ctx context.Context, req *WatchLiveReq) (r *WatchLiveResp, err error)
 
 	PublishRegister(ctx context.Context, req *PublishRegisterReq) (r *PublishRegisterResp, err error)
+
+	StartRecording(ctx context.Context, req *StartRecordingReq) (r *StartRecordingResp, err error)
+
+	StopRecording(ctx context.Context, req *StopRecordingReq) (r *StopRecordingResp, err error)
 }
 
 type LiveServiceGetStreamKeyArgs struct {
@@ -523,5 +697,157 @@ func (p *LiveServicePublishRegisterResult) String() string {
 }
 
 var fieldIDToName_LiveServicePublishRegisterResult = map[int16]string{
+	0: "success",
+}
+
+type LiveServiceStartRecordingArgs struct {
+	Req *StartRecordingReq `thrift:"req,1" frugal:"1,default,StartRecordingReq" json:"req"`
+}
+
+func NewLiveServiceStartRecordingArgs() *LiveServiceStartRecordingArgs {
+	return &LiveServiceStartRecordingArgs{}
+}
+
+func (p *LiveServiceStartRecordingArgs) InitDefault() {
+}
+
+var LiveServiceStartRecordingArgs_Req_DEFAULT *StartRecordingReq
+
+func (p *LiveServiceStartRecordingArgs) GetReq() (v *StartRecordingReq) {
+	if !p.IsSetReq() {
+		return LiveServiceStartRecordingArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+func (p *LiveServiceStartRecordingArgs) SetReq(val *StartRecordingReq) {
+	p.Req = val
+}
+
+func (p *LiveServiceStartRecordingArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *LiveServiceStartRecordingArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("LiveServiceStartRecordingArgs(%+v)", *p)
+}
+
+var fieldIDToName_LiveServiceStartRecordingArgs = map[int16]string{
+	1: "req",
+}
+
+type LiveServiceStartRecordingResult struct {
+	Success *StartRecordingResp `thrift:"success,0,optional" frugal:"0,optional,StartRecordingResp" json:"success,omitempty"`
+}
+
+func NewLiveServiceStartRecordingResult() *LiveServiceStartRecordingResult {
+	return &LiveServiceStartRecordingResult{}
+}
+
+func (p *LiveServiceStartRecordingResult) InitDefault() {
+}
+
+var LiveServiceStartRecordingResult_Success_DEFAULT *StartRecordingResp
+
+func (p *LiveServiceStartRecordingResult) GetSuccess() (v *StartRecordingResp) {
+	if !p.IsSetSuccess() {
+		return LiveServiceStartRecordingResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *LiveServiceStartRecordingResult) SetSuccess(x interface{}) {
+	p.Success = x.(*StartRecordingResp)
+}
+
+func (p *LiveServiceStartRecordingResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *LiveServiceStartRecordingResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("LiveServiceStartRecordingResult(%+v)", *p)
+}
+
+var fieldIDToName_LiveServiceStartRecordingResult = map[int16]string{
+	0: "success",
+}
+
+type LiveServiceStopRecordingArgs struct {
+	Req *StopRecordingReq `thrift:"req,1" frugal:"1,default,StopRecordingReq" json:"req"`
+}
+
+func NewLiveServiceStopRecordingArgs() *LiveServiceStopRecordingArgs {
+	return &LiveServiceStopRecordingArgs{}
+}
+
+func (p *LiveServiceStopRecordingArgs) InitDefault() {
+}
+
+var LiveServiceStopRecordingArgs_Req_DEFAULT *StopRecordingReq
+
+func (p *LiveServiceStopRecordingArgs) GetReq() (v *StopRecordingReq) {
+	if !p.IsSetReq() {
+		return LiveServiceStopRecordingArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+func (p *LiveServiceStopRecordingArgs) SetReq(val *StopRecordingReq) {
+	p.Req = val
+}
+
+func (p *LiveServiceStopRecordingArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *LiveServiceStopRecordingArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("LiveServiceStopRecordingArgs(%+v)", *p)
+}
+
+var fieldIDToName_LiveServiceStopRecordingArgs = map[int16]string{
+	1: "req",
+}
+
+type LiveServiceStopRecordingResult struct {
+	Success *StopRecordingResp `thrift:"success,0,optional" frugal:"0,optional,StopRecordingResp" json:"success,omitempty"`
+}
+
+func NewLiveServiceStopRecordingResult() *LiveServiceStopRecordingResult {
+	return &LiveServiceStopRecordingResult{}
+}
+
+func (p *LiveServiceStopRecordingResult) InitDefault() {
+}
+
+var LiveServiceStopRecordingResult_Success_DEFAULT *StopRecordingResp
+
+func (p *LiveServiceStopRecordingResult) GetSuccess() (v *StopRecordingResp) {
+	if !p.IsSetSuccess() {
+		return LiveServiceStopRecordingResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *LiveServiceStopRecordingResult) SetSuccess(x interface{}) {
+	p.Success = x.(*StopRecordingResp)
+}
+
+func (p *LiveServiceStopRecordingResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *LiveServiceStopRecordingResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("LiveServiceStopRecordingResult(%+v)", *p)
+}
+
+var fieldIDToName_LiveServiceStopRecordingResult = map[int16]string{
 	0: "success",
 }

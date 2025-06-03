@@ -38,8 +38,32 @@ struct PublishRegisterResp{
     255:base.BaseResp baseResp
 }
 
+struct StartRecordingReq{
+    1:i64 teacher_id
+    2:i64 course_id
+    3:string classname
+}
+
+struct StartRecordingResp{
+
+    255:base.BaseResp baseResp
+}
+
+struct StopRecordingReq{
+     1:i64 teacher_id
+     2:i64 course_id
+     3:string classname
+}
+
+struct StopRecordingResp{
+
+    255:base.BaseResp baseResp
+}
+
 service LiveService{
     GetStreamKeyResp GetStreamKey(1:GetStreamKeyReq req)
     WatchLiveResp WatchLive(1:WatchLiveReq req)
     PublishRegisterResp PublishRegister(1:PublishRegisterReq req)
+    StartRecordingResp StartRecording(1:StartRecordingReq req)
+    StopRecordingResp StopRecording(1:StopRecordingReq req)
 }

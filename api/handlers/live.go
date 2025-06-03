@@ -172,3 +172,95 @@ func PublishRegister(ctx context.Context, c *app.RequestContext) {
 		Msg:  "ok",
 	})
 }
+
+func StartRecording(ctx context.Context, c *app.RequestContext) {
+	user, _ := c.Get(middleware.IdentityKey)
+	if user.(*model.User).Role != 1 {
+		c.JSON(200, response.Response{
+			Code: code.ErrNoPermission,
+			Msg:  "抱歉，您无权访问",
+		})
+		return
+	}
+
+	type StartRecordingReq struct {
+		Classname string `json:"classname,required" form:"classname,required"`
+	}
+	var req StartRecordingReq
+	err := c.BindAndValidate(&req)
+	if err != nil {
+		c.JSON(200, response.Response{
+			Code: code.ErrInvalidParams,
+			Msg:  "参数错误:" + err.Error(),
+		})
+		return
+	}
+	result, _ := rpc.StartRecording(ctx, &live.StartRecordingReq{
+		Classname: req.Classname,
+		TeacherId: int64(user.(*model.User).ID),
+	})
+	if result == nil {
+		c.JSON(200, response.Response{
+			Code: -1,
+			Msg:  "内部错误",
+		})
+		return
+	}
+	if result.BaseResp.Code != 0 {
+		c.JSON(200, response.Response{
+			Code: result.BaseResp.Code,
+			Msg:  result.BaseResp.Msg,
+		})
+		return
+	}
+	c.JSON(200, response.Response{
+		Code: 0,
+		Msg:  "ok",
+	})
+
+}
+
+func StopRecording(ctx context.Context, c *app.RequestContext) {
+	user, _ := c.Get(middleware.IdentityKey)
+	if user.(*model.User).Role != 1 {
+		c.JSON(200, response.Response{
+			Code: code.ErrNoPermission,
+			Msg:  "抱歉，您无权访问",
+		})
+		return
+	}
+	type StopRecordingReq struct {
+		Classname string `json:"classname,required" form:"classname,required"`
+	}
+	var req StopRecordingReq
+	err := c.BindAndValidate(&req)
+	if err != nil {
+		c.JSON(200, response.Response{
+			Code: code.ErrInvalidParams,
+			Msg:  "参数错误:" + err.Error(),
+		})
+		return
+	}
+	result, _ := rpc.StopRecording(ctx, &live.StopRecordingReq{
+		Classname: req.Classname,
+		TeacherId: int64(user.(*model.User).ID),
+	})
+	if result == nil {
+		c.JSON(200, response.Response{
+			Code: -1,
+			Msg:  "内部错误",
+		})
+		return
+	}
+	if result.BaseResp.Code != 0 {
+		c.JSON(200, response.Response{
+			Code: result.BaseResp.Code,
+			Msg:  result.BaseResp.Msg,
+		})
+		return
+	}
+	c.JSON(200, response.Response{
+		Code: 0,
+		Msg:  "ok",
+	})
+}

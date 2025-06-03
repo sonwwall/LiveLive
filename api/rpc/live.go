@@ -35,3 +35,11 @@ func WatchLive(ctx context.Context, req *live.WatchLiveReq) (*live.WatchLiveResp
 func PublishRegister(ctx context.Context, req *live.PublishRegisterReq) (*live.PublishRegisterResp, error) {
 	return liveClient.PublishRegister(ctx, req)
 }
+
+func StartRecording(ctx context.Context, req *live.StartRecordingReq) (*live.StartRecordingResp, error) {
+	return liveClient.StartRecording(ctx, req)
+}
+
+func StopRecording(ctx context.Context, req *live.StopRecordingReq) (*live.StopRecordingResp, error) {
+	return liveClient.StopRecording(ctx, req)
+}

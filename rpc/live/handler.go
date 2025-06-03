@@ -16,6 +16,8 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 	"log"
+	"os"
+	"os/exec"
 	"time"
 )
 
@@ -243,6 +245,120 @@ func (s *LiveServiceImpl) PublishRegister(ctx context.Context, req *live.Publish
 	})
 
 	res := &live.PublishRegisterResp{
+		BaseResp: &base.BaseResp{
+			Code: 0,
+			Msg:  "ok",
+		},
+	}
+	return res, nil
+}
+
+// StartRecording implements the LiveServiceImpl interface.
+func (s *LiveServiceImpl) StartRecording(ctx context.Context, req *live.StartRecordingReq) (resp *live.StartRecordingResp, err error) {
+	existCourse, err := db.FindCourseByClassnameAndTeacherId(req.Classname, req.TeacherId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		res := &live.StartRecordingResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrCourseNotExist,
+				Msg:  "课程不存在",
+			},
+		}
+		return res, nil
+
+	}
+	if err != nil {
+		res := &live.StartRecordingResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrDB,
+				Msg:  "数据库错误：" + err.Error(),
+			},
+		}
+		return res, nil
+	}
+
+	RtmpUrl := fmt.Sprintf("rtmp://localhost:1935/live/")
+	StreamKeyRow := fmt.Sprintf("teacher_%d_course_%d_%s", req.TeacherId, existCourse.ID, req.Classname)
+	// 确保 recordings 目录存在
+	_ = os.MkdirAll("./recordings", os.ModePerm)
+
+	// 录制文件保存路径
+	output := fmt.Sprintf("./recordings/%s_%d.flv", StreamKeyRow, time.Now().Unix())
+
+	// 启动 ffmpeg
+	cmd := exec.Command("ffmpeg", "-i", RtmpUrl+StreamKeyRow, "-c", "copy", "-f", "flv", output)
+
+	err = cmd.Start()
+	if err != nil {
+		res := &live.StartRecordingResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrStartRecording,
+				Msg:  "录制失败:" + err.Error(),
+			},
+		}
+		return res, nil
+	}
+	recordingMap[StreamKeyRow] = cmd.Process
+
+	res := &live.StartRecordingResp{
+		BaseResp: &base.BaseResp{
+			Code: 0,
+			Msg:  "ok",
+		},
+	}
+	return res, nil
+}
+
+// StopRecording implements the LiveServiceImpl interface.
+func (s *LiveServiceImpl) StopRecording(ctx context.Context, req *live.StopRecordingReq) (resp *live.StopRecordingResp, err error) {
+	existCourse, err := db.FindCourseByClassnameAndTeacherId(req.Classname, req.TeacherId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		res := &live.StopRecordingResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrCourseNotExist,
+				Msg:  "课程不存在",
+			},
+		}
+		return res, nil
+
+	}
+	if err != nil {
+		res := &live.StopRecordingResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrDB,
+				Msg:  "数据库错误：" + err.Error(),
+			},
+		}
+		return res, nil
+	}
+
+	StreamKeyRow := fmt.Sprintf("teacher_%d_course_%d_%s", req.TeacherId, existCourse.ID, req.Classname)
+	// 录制文件保存路径
+	output := fmt.Sprintf("./recordings/%s_%d.flv", StreamKeyRow, time.Now().Unix())
+	proc, ok := recordingMap[StreamKeyRow]
+	if !ok {
+		res := &live.StopRecordingResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrStopRecording,
+				Msg:  "结束录制失败",
+			},
+		}
+		return res, nil
+	}
+
+	// 杀掉进程
+	err = proc.Kill()
+	if err != nil {
+		res := &live.StopRecordingResp{
+			BaseResp: &base.BaseResp{
+				Code: code.ErrStopRecording,
+				Msg:  "结束录制失败:" + err.Error(),
+			},
+		}
+		return res, nil
+	}
+
+	delete(recordingMap, output)
+	res := &live.StopRecordingResp{
 		BaseResp: &base.BaseResp{
 			Code: 0,
 			Msg:  "ok",

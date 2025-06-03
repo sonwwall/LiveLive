@@ -14,6 +14,8 @@ type Client interface {
 	GetStreamKey(ctx context.Context, req *live.GetStreamKeyReq, callOptions ...callopt.Option) (r *live.GetStreamKeyResp, err error)
 	WatchLive(ctx context.Context, req *live.WatchLiveReq, callOptions ...callopt.Option) (r *live.WatchLiveResp, err error)
 	PublishRegister(ctx context.Context, req *live.PublishRegisterReq, callOptions ...callopt.Option) (r *live.PublishRegisterResp, err error)
+	StartRecording(ctx context.Context, req *live.StartRecordingReq, callOptions ...callopt.Option) (r *live.StartRecordingResp, err error)
+	StopRecording(ctx context.Context, req *live.StopRecordingReq, callOptions ...callopt.Option) (r *live.StopRecordingResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -58,4 +60,14 @@ func (p *kLiveServiceClient) WatchLive(ctx context.Context, req *live.WatchLiveR
 func (p *kLiveServiceClient) PublishRegister(ctx context.Context, req *live.PublishRegisterReq, callOptions ...callopt.Option) (r *live.PublishRegisterResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.PublishRegister(ctx, req)
+}
+
+func (p *kLiveServiceClient) StartRecording(ctx context.Context, req *live.StartRecordingReq, callOptions ...callopt.Option) (r *live.StartRecordingResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.StartRecording(ctx, req)
+}
+
+func (p *kLiveServiceClient) StopRecording(ctx context.Context, req *live.StopRecordingReq, callOptions ...callopt.Option) (r *live.StopRecordingResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.StopRecording(ctx, req)
 }
