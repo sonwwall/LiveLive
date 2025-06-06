@@ -3,6 +3,7 @@ package main
 import (
 	"LiveLive/dao"
 	"LiveLive/kafka/consumer"
+	ai "LiveLive/kitex_gen/livelive/ai/aiservice"
 	live "LiveLive/kitex_gen/livelive/live/liveservice"
 	websocket "LiveLive/kitex_gen/livelive/websocket/websocketservice"
 	"github.com/cloudwego/kitex/client"
@@ -32,8 +33,19 @@ func main() {
 		panic(err)
 	}
 
+	//连接aiRPC
+	ai_r, err := etcd.NewEtcdResolver([]string{"127.0.0.1:2379"})
+	if err != nil {
+		panic(err)
+	}
+	ai_c, err := ai.NewClient("livelive.ai", client.WithResolver(ai_r))
+	if err != nil {
+		panic(err)
+	}
+
 	liveServiceImpl := new(LiveServiceImpl) //impl实现
 	liveServiceImpl.wsClient = ws_c
+	liveServiceImpl.aiClient = ai_c
 
 	addr, _ := net.ResolveTCPAddr("tcp", "127.0.0.1:8890")
 	svr := live.NewServer(liveServiceImpl,

@@ -3,6 +3,8 @@ package main
 import (
 	"LiveLive/dao/db"
 	dao "LiveLive/dao/rdb"
+	"LiveLive/kitex_gen/livelive/ai"
+	"LiveLive/kitex_gen/livelive/ai/aiservice"
 	"LiveLive/kitex_gen/livelive/base"
 	live "LiveLive/kitex_gen/livelive/live"
 	"LiveLive/kitex_gen/livelive/websocket"
@@ -18,12 +20,15 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
 // LiveServiceImpl implements the last service interface defined in the IDL.
 type LiveServiceImpl struct {
 	wsClient websocketservice.Client
+	aiClient aiservice.Client
 }
 
 // GetStreamKey implements the LiveServiceImpl interface.
@@ -285,7 +290,10 @@ func (s *LiveServiceImpl) StartRecording(ctx context.Context, req *live.StartRec
 	output := fmt.Sprintf("./recordings/%s_%d.flv", StreamKeyRow, time.Now().Unix())
 
 	// 启动 ffmpeg
-	cmd := exec.Command("ffmpeg", "-i", RtmpUrl+StreamKeyRow, "-c", "copy", "-f", "flv", output)
+	//cmd := exec.Command("ffmpeg", "-i", RtmpUrl+StreamKeyRow, "-c", "copy", "-f", "flv", output)
+	//cmd.Env = append(os.Environ(), "PATH=/opt/homebrew/bin:"+os.Getenv("PATH"))
+
+	cmd := exec.Command("/opt/homebrew/bin/ffmpeg", "-i", RtmpUrl+StreamKeyRow, "-c", "copy", "-f", "flv", output)
 
 	err = cmd.Start()
 	if err != nil {
@@ -297,7 +305,35 @@ func (s *LiveServiceImpl) StartRecording(ctx context.Context, req *live.StartRec
 		}
 		return res, nil
 	}
-	recordingMap[StreamKeyRow] = cmd.Process
+	recordingMap[StreamKeyRow] = cmd
+
+	go func() {
+		err = cmd.Wait()
+		delete(recordingMap, StreamKeyRow)
+
+		if err != nil {
+			fmt.Println("录制进程异常退出:", err)
+		}
+
+		fmt.Println("录制完成，开始转码为 wav")
+		wavPath, err := ConvertFLVToWAV(output)
+		if err != nil {
+			fmt.Println("音频转码失败:", err)
+		} else {
+			fmt.Println("音频转码成功，路径:", wavPath)
+		}
+
+		result, _ := s.aiClient.AnalyzeAudio(ctx, &ai.AnalyzeAudioReq{
+			WavPath: wavPath,
+		})
+		if result == nil {
+			log.Println("内部错误")
+		}
+		if result.BaseResp.Code != 0 {
+			log.Println("分析音频错误:", result.BaseResp.Msg)
+		}
+		log.Println("音频:", result.Summary)
+	}()
 
 	res := &live.StartRecordingResp{
 		BaseResp: &base.BaseResp{
@@ -306,6 +342,48 @@ func (s *LiveServiceImpl) StartRecording(ctx context.Context, req *live.StartRec
 		},
 	}
 	return res, nil
+}
+
+// ConvertFLVToWAV 提取 flv 中的音频并转换为 16kHz 单声道 wav 格式
+func ConvertFLVToWAV(flvPath string) (string, error) {
+	// 确保输出目录存在
+	outputDir := "./audios"
+	err := os.MkdirAll(outputDir, os.ModePerm)
+	if err != nil {
+		return "", fmt.Errorf("创建音频目录失败: %v", err)
+	}
+
+	// 生成 wav 输出路径
+	base := strings.TrimSuffix(filepath.Base(flvPath), filepath.Ext(flvPath))
+	wavPath := filepath.Join(outputDir, fmt.Sprintf("%s_%d.wav", base, time.Now().Unix()))
+
+	// 构造 ffmpeg 命令
+	//cmd := exec.Command("ffmpeg",
+	//	"-i", flvPath,
+	//	"-vn",                  // 不要视频
+	//	"-acodec", "pcm_s16le", // 编码为 PCM
+	//	"-ar", "16000", // 采样率 16kHz
+	//	"-ac", "1", // 单声道
+	//	wavPath,
+	//)
+
+	cmd := exec.Command("/opt/homebrew/bin/ffmpeg",
+		"-i", flvPath,
+		"-vn",                  // 去除视频
+		"-acodec", "pcm_s16le", // PCM 编码
+		"-ar", "16000", // 采样率 16kHz
+		"-ac", "1", // 单声道
+		wavPath,
+	)
+
+	fmt.Println("执行 ffmpeg 转换:", cmd.String())
+
+	err = cmd.Run()
+	if err != nil {
+		return "", fmt.Errorf("ffmpeg 执行失败: %v", err)
+	}
+
+	return wavPath, nil
 }
 
 // StopRecording implements the LiveServiceImpl interface.
@@ -333,7 +411,7 @@ func (s *LiveServiceImpl) StopRecording(ctx context.Context, req *live.StopRecor
 
 	StreamKeyRow := fmt.Sprintf("teacher_%d_course_%d_%s", req.TeacherId, existCourse.ID, req.Classname)
 	// 录制文件保存路径
-	output := fmt.Sprintf("./recordings/%s_%d.flv", StreamKeyRow, time.Now().Unix())
+	//output := fmt.Sprintf("./recordings/%s_%d.flv", StreamKeyRow, time.Now().Unix())
 	proc, ok := recordingMap[StreamKeyRow]
 	if !ok {
 		res := &live.StopRecordingResp{
@@ -346,7 +424,7 @@ func (s *LiveServiceImpl) StopRecording(ctx context.Context, req *live.StopRecor
 	}
 
 	// 杀掉进程
-	err = proc.Kill()
+	err = proc.Process.Kill()
 	if err != nil {
 		res := &live.StopRecordingResp{
 			BaseResp: &base.BaseResp{
@@ -357,7 +435,6 @@ func (s *LiveServiceImpl) StopRecording(ctx context.Context, req *live.StopRecor
 		return res, nil
 	}
 
-	delete(recordingMap, output)
 	res := &live.StopRecordingResp{
 		BaseResp: &base.BaseResp{
 			Code: 0,

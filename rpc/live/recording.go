@@ -1,5 +1,7 @@
 package main
 
-import "os"
+import (
+	"os/exec"
+)
 
-var recordingMap = make(map[string]*os.Process)
+var recordingMap = make(map[string]*exec.Cmd)
