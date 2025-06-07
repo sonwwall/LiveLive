@@ -93,24 +93,44 @@ func (s *AIServiceImpl) AnalyzeAudio(ctx context.Context, req *ai.AnalyzeAudioRe
 }
 
 // 配置阿里云oss的一些配置
-var (
-	Endpoint        = "oss-cn-beijing.aliyuncs.com" // 根据你创建的 Bucket 所在地域调整
-	AccessKeyID     = "LTAI5tReroSL953zyeKeCdhA"
-	AccessKeySecret = "BQcKmnkzLPAD1JYu42f6bxTgfYxYdv"
-	BucketName      = "sonwwall-livelive"
-	OssBaseURL      = "https://sonwwall-livelive.oss-cn-beijing.aliyuncs.com/"
-)
+type Config struct {
+	Oss        OssConfig        `mapstructure:"aliyunOssConfig"`
+	AudioModel AudioModelConfig `mapstructure:"audioModel"`
+	AIModel    AIModelConfig    `mapstructure:"aiModel"`
+}
+type OssConfig struct {
+	Endpoint        string `mapstructure:"endpoint"`
+	AccessKeyID     string `mapstructure:"accessKeyID"`
+	AccessKeySecret string `mapstructure:"accessKeySecret"`
+	BucketName      string `mapstructure:"bucketName"`
+	OssBaseURL      string `mapstructure:"ossBaseUrl"`
+}
+
+type AudioModelConfig struct {
+	ApiAppKey    string `mapstructure:"apiAppKey"`
+	ApiAccessKey string `mapstructure:"apiAccessKey"`
+}
+
+type AIModelConfig struct {
+	Model   string `mapstructure:"model"`
+	BaseURL string `mapstructure:"baseUrl"`
+	Region  string `mapstructure:"region"`
+	APIKey  string `mapstructure:"apiKey"`
+}
+
+var Cfg *Config
 
 // UploadAudio uploads a local audio file to OSS and returns the public URL.
 func UploadAudio(localFilePath string) (string, error) {
+
 	// 创建 OSS 客户端
-	client, err := oss.New(Endpoint, AccessKeyID, AccessKeySecret)
+	client, err := oss.New(Cfg.Oss.Endpoint, Cfg.Oss.AccessKeyID, Cfg.Oss.AccessKeySecret)
 	if err != nil {
 		return "", fmt.Errorf("创建OSS客户端失败: %w", err)
 	}
 
 	// 获取 Bucket 实例
-	bucket, err := client.Bucket(BucketName)
+	bucket, err := client.Bucket(Cfg.Oss.BucketName)
 	if err != nil {
 		return "", fmt.Errorf("获取Bucket失败: %w", err)
 	}
@@ -131,18 +151,16 @@ func UploadAudio(localFilePath string) (string, error) {
 	}
 
 	// 拼接公开可访问链接
-	publicURL := OssBaseURL + objectName
+	publicURL := Cfg.Oss.OssBaseURL + objectName
 	return publicURL, nil
 }
 
 //封装提交任务函数
 
 const (
-	apiAppKey    = "6367434862"
-	apiAccessKey = "0kVVXn6KkBUNNkTAVry7MFx5P4_rTQgE"
-	resourceId   = "volc.bigasr.auc"
-	submitURL    = "https://openspeech.bytedance.com/api/v3/auc/bigmodel/submit"
-	queryURL     = "https://openspeech.bytedance.com/api/v3/auc/bigmodel/query"
+	resourceId = "volc.bigasr.auc"
+	submitURL  = "https://openspeech.bytedance.com/api/v3/auc/bigmodel/submit"
+	queryURL   = "https://openspeech.bytedance.com/api/v3/auc/bigmodel/query"
 )
 
 type SubmitRequest struct {
@@ -178,8 +196,8 @@ func SubmitToVolc(url string) (string, error) {
 	requestId := uuid.New().String()
 	req, _ := http.NewRequest("POST", submitURL, bytes.NewBuffer(bodyBytes))
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-Api-App-Key", apiAppKey)
-	req.Header.Set("X-Api-Access-Key", apiAccessKey)
+	req.Header.Set("X-Api-App-Key", Cfg.AudioModel.ApiAppKey)
+	req.Header.Set("X-Api-Access-Key", Cfg.AudioModel.ApiAccessKey)
 	req.Header.Set("X-Api-Resource-Id", resourceId)
 	req.Header.Set("X-Api-Request-Id", requestId)
 	req.Header.Set("X-Api-Sequence", "-1")
@@ -226,8 +244,8 @@ type Response struct {
 func QueryVolcResult(requestId string) (string, error) {
 	req, _ := http.NewRequest("POST", queryURL, bytes.NewBuffer([]byte("{}")))
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-Api-App-Key", apiAppKey)
-	req.Header.Set("X-Api-Access-Key", apiAccessKey)
+	req.Header.Set("X-Api-App-Key", Cfg.AudioModel.ApiAppKey)
+	req.Header.Set("X-Api-Access-Key", Cfg.AudioModel.ApiAccessKey)
 	req.Header.Set("X-Api-Resource-Id", resourceId)
 	req.Header.Set("X-Api-Request-Id", requestId)
 
@@ -260,10 +278,10 @@ func QueryVolcResult(requestId string) (string, error) {
 // 创建模型
 func createHuoShanChatModel(ctx context.Context) model.ChatModel {
 	chatModel, err := ark.NewChatModel(ctx, &ark.ChatModelConfig{
-		Model:   "ep-20250528160851-c9czd",
-		BaseURL: "https://ark.cn-beijing.volces.com/api/v3",
-		Region:  "cn-beijing",
-		APIKey:  "8f51e4bd-de97-4ad2-87a6-a63f3f397a03", // 注意：生产环境请勿硬编码 APIKey
+		Model:   Cfg.AIModel.Model,
+		BaseURL: Cfg.AIModel.BaseURL,
+		Region:  Cfg.AIModel.Region,
+		APIKey:  Cfg.AIModel.APIKey,
 	})
 	if err != nil {
 		log.Fatalf("create chat model failed: %v", err)

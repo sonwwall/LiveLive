@@ -1,0 +1,15 @@
+aliyunOssConfig:
+  Endpoint: "xxxx"
+  AccessKeyID: "xxxx"
+  AccessKeySecret: "xxxx"
+  BucketName: "xxxx"
+  OssBaseURL: "xxxx"
+audioModel:
+  apiAppKey: "xxxx"
+  apiAccessKey: "xxxx"
+aiModel:
+  model: "xxxx"
+  baseUrl: "xxxx"
+  region: "xxxx"
+  apiKey: "xxxx"
+

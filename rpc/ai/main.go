@@ -4,6 +4,7 @@ import (
 	"LiveLive/dao"
 	ai "LiveLive/kitex_gen/livelive/ai/aiservice"
 	websocket "LiveLive/kitex_gen/livelive/websocket/websocketservice"
+	"LiveLive/viper"
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
@@ -14,6 +15,13 @@ import (
 
 func main() {
 	dao.Init()
+	con := viper.Init("ai")
+	var config Config
+	if err := con.Viper.Unmarshal(&config); err != nil {
+		panic("反序列化配置失败:" + err.Error())
+	}
+
+	Cfg = &config
 
 	//连接websocketRPC
 	ws_r, err := etcd.NewEtcdResolver([]string{"127.0.0.1:2379"})
