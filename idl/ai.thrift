@@ -12,6 +12,17 @@ struct AnalyzeAudioResp{
     255:base.BaseResp baseResp
 }
 
+struct ChatWithAIReq{
+    1:string content
+}
+
+struct ChatWithAIResp{
+    1:string content
+
+    255:base.BaseResp baseResp
+}
+
 service AIService{
     AnalyzeAudioResp AnalyzeAudio(1:AnalyzeAudioReq req)
+    ChatWithAIResp ChatWithAI(1:ChatWithAIReq req)
 }

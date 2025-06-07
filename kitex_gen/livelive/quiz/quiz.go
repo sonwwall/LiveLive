@@ -120,8 +120,113 @@ var fieldIDToName_PublishChoiceQuestionResp = map[int16]string{
 	255: "baseResp",
 }
 
+type PublishTrueOrFalseQuestionReq struct {
+	TeacherId int64  `thrift:"teacher_id,1" frugal:"1,default,i64" json:"teacher_id"`
+	CourseId  int64  `thrift:"course_id,2" frugal:"2,default,i64" json:"course_id"`
+	Title     string `thrift:"title,3" frugal:"3,default,string" json:"title"`
+	Answer    int8   `thrift:"answer,5" frugal:"5,default,i8" json:"answer"`
+	Deadline  int64  `thrift:"deadline,6" frugal:"6,default,i64" json:"deadline"`
+}
+
+func NewPublishTrueOrFalseQuestionReq() *PublishTrueOrFalseQuestionReq {
+	return &PublishTrueOrFalseQuestionReq{}
+}
+
+func (p *PublishTrueOrFalseQuestionReq) InitDefault() {
+}
+
+func (p *PublishTrueOrFalseQuestionReq) GetTeacherId() (v int64) {
+	return p.TeacherId
+}
+
+func (p *PublishTrueOrFalseQuestionReq) GetCourseId() (v int64) {
+	return p.CourseId
+}
+
+func (p *PublishTrueOrFalseQuestionReq) GetTitle() (v string) {
+	return p.Title
+}
+
+func (p *PublishTrueOrFalseQuestionReq) GetAnswer() (v int8) {
+	return p.Answer
+}
+
+func (p *PublishTrueOrFalseQuestionReq) GetDeadline() (v int64) {
+	return p.Deadline
+}
+func (p *PublishTrueOrFalseQuestionReq) SetTeacherId(val int64) {
+	p.TeacherId = val
+}
+func (p *PublishTrueOrFalseQuestionReq) SetCourseId(val int64) {
+	p.CourseId = val
+}
+func (p *PublishTrueOrFalseQuestionReq) SetTitle(val string) {
+	p.Title = val
+}
+func (p *PublishTrueOrFalseQuestionReq) SetAnswer(val int8) {
+	p.Answer = val
+}
+func (p *PublishTrueOrFalseQuestionReq) SetDeadline(val int64) {
+	p.Deadline = val
+}
+
+func (p *PublishTrueOrFalseQuestionReq) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("PublishTrueOrFalseQuestionReq(%+v)", *p)
+}
+
+var fieldIDToName_PublishTrueOrFalseQuestionReq = map[int16]string{
+	1: "teacher_id",
+	2: "course_id",
+	3: "title",
+	5: "answer",
+	6: "deadline",
+}
+
+type PublishTrueOrFalseQuestionResp struct {
+	BaseResp *base.BaseResp `thrift:"baseResp,255" frugal:"255,default,base.BaseResp" json:"baseResp"`
+}
+
+func NewPublishTrueOrFalseQuestionResp() *PublishTrueOrFalseQuestionResp {
+	return &PublishTrueOrFalseQuestionResp{}
+}
+
+func (p *PublishTrueOrFalseQuestionResp) InitDefault() {
+}
+
+var PublishTrueOrFalseQuestionResp_BaseResp_DEFAULT *base.BaseResp
+
+func (p *PublishTrueOrFalseQuestionResp) GetBaseResp() (v *base.BaseResp) {
+	if !p.IsSetBaseResp() {
+		return PublishTrueOrFalseQuestionResp_BaseResp_DEFAULT
+	}
+	return p.BaseResp
+}
+func (p *PublishTrueOrFalseQuestionResp) SetBaseResp(val *base.BaseResp) {
+	p.BaseResp = val
+}
+
+func (p *PublishTrueOrFalseQuestionResp) IsSetBaseResp() bool {
+	return p.BaseResp != nil
+}
+
+func (p *PublishTrueOrFalseQuestionResp) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("PublishTrueOrFalseQuestionResp(%+v)", *p)
+}
+
+var fieldIDToName_PublishTrueOrFalseQuestionResp = map[int16]string{
+	255: "baseResp",
+}
+
 type QuizService interface {
 	PublishChoiceQuestion(ctx context.Context, req *PublishChoiceQuestionReq) (r *PublishChoiceQuestionResp, err error)
+
+	PublishTrueOrFalseQuestion(ctx context.Context, req *PublishTrueOrFalseQuestionReq) (r *PublishTrueOrFalseQuestionResp, err error)
 }
 
 type QuizServicePublishChoiceQuestionArgs struct {
@@ -197,5 +302,81 @@ func (p *QuizServicePublishChoiceQuestionResult) String() string {
 }
 
 var fieldIDToName_QuizServicePublishChoiceQuestionResult = map[int16]string{
+	0: "success",
+}
+
+type QuizServicePublishTrueOrFalseQuestionArgs struct {
+	Req *PublishTrueOrFalseQuestionReq `thrift:"req,1" frugal:"1,default,PublishTrueOrFalseQuestionReq" json:"req"`
+}
+
+func NewQuizServicePublishTrueOrFalseQuestionArgs() *QuizServicePublishTrueOrFalseQuestionArgs {
+	return &QuizServicePublishTrueOrFalseQuestionArgs{}
+}
+
+func (p *QuizServicePublishTrueOrFalseQuestionArgs) InitDefault() {
+}
+
+var QuizServicePublishTrueOrFalseQuestionArgs_Req_DEFAULT *PublishTrueOrFalseQuestionReq
+
+func (p *QuizServicePublishTrueOrFalseQuestionArgs) GetReq() (v *PublishTrueOrFalseQuestionReq) {
+	if !p.IsSetReq() {
+		return QuizServicePublishTrueOrFalseQuestionArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+func (p *QuizServicePublishTrueOrFalseQuestionArgs) SetReq(val *PublishTrueOrFalseQuestionReq) {
+	p.Req = val
+}
+
+func (p *QuizServicePublishTrueOrFalseQuestionArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *QuizServicePublishTrueOrFalseQuestionArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("QuizServicePublishTrueOrFalseQuestionArgs(%+v)", *p)
+}
+
+var fieldIDToName_QuizServicePublishTrueOrFalseQuestionArgs = map[int16]string{
+	1: "req",
+}
+
+type QuizServicePublishTrueOrFalseQuestionResult struct {
+	Success *PublishTrueOrFalseQuestionResp `thrift:"success,0,optional" frugal:"0,optional,PublishTrueOrFalseQuestionResp" json:"success,omitempty"`
+}
+
+func NewQuizServicePublishTrueOrFalseQuestionResult() *QuizServicePublishTrueOrFalseQuestionResult {
+	return &QuizServicePublishTrueOrFalseQuestionResult{}
+}
+
+func (p *QuizServicePublishTrueOrFalseQuestionResult) InitDefault() {
+}
+
+var QuizServicePublishTrueOrFalseQuestionResult_Success_DEFAULT *PublishTrueOrFalseQuestionResp
+
+func (p *QuizServicePublishTrueOrFalseQuestionResult) GetSuccess() (v *PublishTrueOrFalseQuestionResp) {
+	if !p.IsSetSuccess() {
+		return QuizServicePublishTrueOrFalseQuestionResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *QuizServicePublishTrueOrFalseQuestionResult) SetSuccess(x interface{}) {
+	p.Success = x.(*PublishTrueOrFalseQuestionResp)
+}
+
+func (p *QuizServicePublishTrueOrFalseQuestionResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *QuizServicePublishTrueOrFalseQuestionResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("QuizServicePublishTrueOrFalseQuestionResult(%+v)", *p)
+}
+
+var fieldIDToName_QuizServicePublishTrueOrFalseQuestionResult = map[int16]string{
 	0: "success",
 }

@@ -13,6 +13,7 @@ import (
 type Client interface {
 	BroadcastToCourse(ctx context.Context, req *websocket.BroadcastToCourseReq, callOptions ...callopt.Option) (r *websocket.BroadcastToCourseResp, err error)
 	AggregateAnswers(ctx context.Context, req *websocket.AggregateAnswersReq, callOptions ...callopt.Option) (r *websocket.AggregateAnswersResp, err error)
+	AggregateTrueOrFalseAnswers(ctx context.Context, req *websocket.AggregateTrueOrFalseAnswersReq, callOptions ...callopt.Option) (r *websocket.AggregateTrueOrFalseAnswersResp, err error)
 	CountRegister(ctx context.Context, req *websocket.CountRegisterReq, callOptions ...callopt.Option) (r *websocket.CountRegisterResp, err error)
 }
 
@@ -53,6 +54,11 @@ func (p *kWebsocketServiceClient) BroadcastToCourse(ctx context.Context, req *we
 func (p *kWebsocketServiceClient) AggregateAnswers(ctx context.Context, req *websocket.AggregateAnswersReq, callOptions ...callopt.Option) (r *websocket.AggregateAnswersResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.AggregateAnswers(ctx, req)
+}
+
+func (p *kWebsocketServiceClient) AggregateTrueOrFalseAnswers(ctx context.Context, req *websocket.AggregateTrueOrFalseAnswersReq, callOptions ...callopt.Option) (r *websocket.AggregateTrueOrFalseAnswersResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.AggregateTrueOrFalseAnswers(ctx, req)
 }
 
 func (p *kWebsocketServiceClient) CountRegister(ctx context.Context, req *websocket.CountRegisterReq, callOptions ...callopt.Option) (r *websocket.CountRegisterResp, err error) {

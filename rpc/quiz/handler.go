@@ -87,3 +87,65 @@ func (s *QuizServiceImpl) PublishChoiceQuestion(ctx context.Context, req *quiz.P
 	return res, nil
 
 }
+
+// PublishTrueOrFalseQuestion implements the QuizServiceImpl interface.
+func (s *QuizServiceImpl) PublishTrueOrFalseQuestion(ctx context.Context, req *quiz.PublishTrueOrFalseQuestionReq) (resp *quiz.PublishTrueOrFalseQuestionResp, err error) {
+	question := &model.TrueOrFalseQuestion{
+		CourseId:  req.CourseId,
+		Title:     req.Title,
+		TeacherId: req.TeacherId,
+		Answer:    req.Answer,
+		Deadline:  utils.TimestampToPtr(req.Deadline),
+	}
+
+	err, questionId := db.AddTrueOrFalseQuestion(question)
+	if err != nil {
+		log.Printf("db.AddTrueOrFalseQuestion err: %+v", err)
+	}
+
+	msg := map[string]interface{}{
+		"type": "true_or_false_question",
+		"data": map[string]interface{}{
+			"question_id": questionId,
+			"title":       req.Title,
+			"deadline":    req.Deadline,
+		},
+	}
+	data, _ := json.Marshal(msg)
+	s.wsClient.BroadcastToCourse(ctx, &websocket.BroadcastToCourseReq{
+		CourseId: req.CourseId,
+		Data:     data,
+	})
+
+	//设置一个过期时间，统计完后自动过期
+	duration := 3 * time.Minute
+	log.Println(duration)
+	key := fmt.Sprintf("true_or_false_answer:%d", questionId)
+
+	//设置定时任务,到时间自动返回统计结果
+	time.AfterFunc(time.Unix(req.Deadline, 0).Sub(time.Now()), func() {
+		result, _ := s.wsClient.AggregateTrueOrFalseAnswers(ctx, &websocket.AggregateTrueOrFalseAnswersReq{
+			QuestionId:    int64(questionId),
+			CourseId:      req.CourseId,
+			CorrectAnswer: req.Answer,
+		})
+		dao.Redis.Expire(ctx, key, duration) //统计完三分钟后自动清除redis缓存
+		answeredTrueOrFalseQuestion := &model.AnsweredTrueOrFalseQuestion{
+			TrueOrFalseQuestionId: questionId,
+			Title:                 req.Title,
+			Answer:                req.Answer,
+			Accuracy:              result.Accuracy,
+		}
+
+		_ = db.AddAnsweredTrueOrFalseQuestion(answeredTrueOrFalseQuestion)
+	})
+
+	res := &quiz.PublishTrueOrFalseQuestionResp{
+		BaseResp: &base.BaseResp{
+			Code: 0,
+			Msg:  "ok",
+		},
+	}
+	return res, nil
+
+}

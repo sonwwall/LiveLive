@@ -11,3 +11,13 @@ func AddAnsweredChoiceQuestion(answeredChoiceQuestion *model.AnsweredChoiceQuest
 	err := Mysql.Create(answeredChoiceQuestion).Error
 	return err
 }
+
+func AddTrueOrFalseQuestion(trueOrFalseQuestion *model.TrueOrFalseQuestion) (error, uint) {
+	err := Mysql.Create(trueOrFalseQuestion).Error
+	return err, trueOrFalseQuestion.ID
+}
+
+func AddAnsweredTrueOrFalseQuestion(answeredTrueOrFalseQuestion *model.AnsweredTrueOrFalseQuestion) error {
+	err := Mysql.Create(answeredTrueOrFalseQuestion).Error
+	return err
+}

@@ -27,3 +27,7 @@ func InitQuizRPCClient() {
 func PublishChoiceQuestion(ctx context.Context, req *quiz.PublishChoiceQuestionReq) (*quiz.PublishChoiceQuestionResp, error) {
 	return quizClient.PublishChoiceQuestion(ctx, req)
 }
+
+func PublishTrueOrFalseQuestion(ctx context.Context, req *quiz.PublishTrueOrFalseQuestionReq) (*quiz.PublishTrueOrFalseQuestionResp, error) {
+	return quizClient.PublishTrueOrFalseQuestion(ctx, req)
+}

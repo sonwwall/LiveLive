@@ -108,6 +108,8 @@ func HandleMessage(msg []byte, client *WsClient, hub *WsHub) {
 	switch wsMsg.Type {
 	case "choice_answer":
 		MessageChoiceQuestion(msg, client, hub, &wsMsg)
+	case "true_or_false_answer":
+		MessageTrueOrFalseQuestion(msg, client, hub, &wsMsg)
 	case "chat":
 
 		MessageChat(msg, client, hub, &wsMsg)
@@ -192,4 +194,30 @@ func MessageRegister(msg []byte, client *WsClient, hub *WsHub, wsMsg *WsMessage)
 	//修改状态为1，表示已签到
 	dao.Redis.HSet(context.Background(), key, a.Username, 1)
 
+}
+
+func MessageTrueOrFalseQuestion(msg []byte, client *WsClient, hub *WsHub, wsMsg *WsMessage) {
+	var a AnswerMessage
+	if err := json.Unmarshal(wsMsg.Data, &a); err != nil {
+		log.Println("解析答题数据失败:", err)
+		return
+	}
+	key := fmt.Sprintf("true_or_false_answer:%s", a.QuestionID)
+	//检查是否提交过答案
+	exists, _ := dao.Redis.HExists(context.Background(), key, a.StudentID).Result()
+
+	if exists {
+
+		for client := range hub.Connections[utils.StringToInt64(a.CourseID)] {
+			if client.UserId == utils.StringToInt64(a.StudentID) {
+				client.SendCh <- []byte("您已提交过答案，无法再次提交")
+				return
+			}
+		}
+	}
+	//设置redis缓存 hash类型
+	err := dao.Redis.HSet(context.Background(), key, a.StudentID, a.Answer).Err()
+	if err != nil {
+		log.Println("写入 Redis 失败:", err)
+	}
 }

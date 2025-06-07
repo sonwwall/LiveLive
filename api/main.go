@@ -29,6 +29,7 @@ func main() {
 	teacher.POST("/create_courseInvite", handlers.CreateCourseInvite)
 	teacher.GET("/streamKey", handlers.GetStreamKey)
 	teacher.POST("/choice_question", handlers.PublishChoiceQuestion)
+	teacher.POST("/trueOrFalse_question", handlers.PublishTrueOrFalseQuestion)
 	teacher.POST("/publish_register", handlers.PublishRegister)
 	teacher.POST("/start_recording", handlers.StartRecording)
 	teacher.POST("/stop_recording", handlers.StopRecording)

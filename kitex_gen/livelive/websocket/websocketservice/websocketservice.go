@@ -27,6 +27,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"AggregateTrueOrFalseAnswers": kitex.NewMethodInfo(
+		aggregateTrueOrFalseAnswersHandler,
+		newWebsocketServiceAggregateTrueOrFalseAnswersArgs,
+		newWebsocketServiceAggregateTrueOrFalseAnswersResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 	"CountRegister": kitex.NewMethodInfo(
 		countRegisterHandler,
 		newWebsocketServiceCountRegisterArgs,
@@ -136,6 +143,24 @@ func newWebsocketServiceAggregateAnswersResult() interface{} {
 	return websocket.NewWebsocketServiceAggregateAnswersResult()
 }
 
+func aggregateTrueOrFalseAnswersHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*websocket.WebsocketServiceAggregateTrueOrFalseAnswersArgs)
+	realResult := result.(*websocket.WebsocketServiceAggregateTrueOrFalseAnswersResult)
+	success, err := handler.(websocket.WebsocketService).AggregateTrueOrFalseAnswers(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newWebsocketServiceAggregateTrueOrFalseAnswersArgs() interface{} {
+	return websocket.NewWebsocketServiceAggregateTrueOrFalseAnswersArgs()
+}
+
+func newWebsocketServiceAggregateTrueOrFalseAnswersResult() interface{} {
+	return websocket.NewWebsocketServiceAggregateTrueOrFalseAnswersResult()
+}
+
 func countRegisterHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	realArg := arg.(*websocket.WebsocketServiceCountRegisterArgs)
 	realResult := result.(*websocket.WebsocketServiceCountRegisterResult)
@@ -179,6 +204,16 @@ func (p *kClient) AggregateAnswers(ctx context.Context, req *websocket.Aggregate
 	_args.Req = req
 	var _result websocket.WebsocketServiceAggregateAnswersResult
 	if err = p.c.Call(ctx, "AggregateAnswers", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) AggregateTrueOrFalseAnswers(ctx context.Context, req *websocket.AggregateTrueOrFalseAnswersReq) (r *websocket.AggregateTrueOrFalseAnswersResp, err error) {
+	var _args websocket.WebsocketServiceAggregateTrueOrFalseAnswersArgs
+	_args.Req = req
+	var _result websocket.WebsocketServiceAggregateTrueOrFalseAnswersResult
+	if err = p.c.Call(ctx, "AggregateTrueOrFalseAnswers", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

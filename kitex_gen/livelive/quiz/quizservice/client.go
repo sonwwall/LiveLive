@@ -12,6 +12,7 @@ import (
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
 	PublishChoiceQuestion(ctx context.Context, req *quiz.PublishChoiceQuestionReq, callOptions ...callopt.Option) (r *quiz.PublishChoiceQuestionResp, err error)
+	PublishTrueOrFalseQuestion(ctx context.Context, req *quiz.PublishTrueOrFalseQuestionReq, callOptions ...callopt.Option) (r *quiz.PublishTrueOrFalseQuestionResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -46,4 +47,9 @@ type kQuizServiceClient struct {
 func (p *kQuizServiceClient) PublishChoiceQuestion(ctx context.Context, req *quiz.PublishChoiceQuestionReq, callOptions ...callopt.Option) (r *quiz.PublishChoiceQuestionResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.PublishChoiceQuestion(ctx, req)
+}
+
+func (p *kQuizServiceClient) PublishTrueOrFalseQuestion(ctx context.Context, req *quiz.PublishTrueOrFalseQuestionReq, callOptions ...callopt.Option) (r *quiz.PublishTrueOrFalseQuestionResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.PublishTrueOrFalseQuestion(ctx, req)
 }

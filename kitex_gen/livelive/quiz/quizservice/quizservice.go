@@ -20,6 +20,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"PublishTrueOrFalseQuestion": kitex.NewMethodInfo(
+		publishTrueOrFalseQuestionHandler,
+		newQuizServicePublishTrueOrFalseQuestionArgs,
+		newQuizServicePublishTrueOrFalseQuestionResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -104,6 +111,24 @@ func newQuizServicePublishChoiceQuestionResult() interface{} {
 	return quiz.NewQuizServicePublishChoiceQuestionResult()
 }
 
+func publishTrueOrFalseQuestionHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*quiz.QuizServicePublishTrueOrFalseQuestionArgs)
+	realResult := result.(*quiz.QuizServicePublishTrueOrFalseQuestionResult)
+	success, err := handler.(quiz.QuizService).PublishTrueOrFalseQuestion(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newQuizServicePublishTrueOrFalseQuestionArgs() interface{} {
+	return quiz.NewQuizServicePublishTrueOrFalseQuestionArgs()
+}
+
+func newQuizServicePublishTrueOrFalseQuestionResult() interface{} {
+	return quiz.NewQuizServicePublishTrueOrFalseQuestionResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -119,6 +144,16 @@ func (p *kClient) PublishChoiceQuestion(ctx context.Context, req *quiz.PublishCh
 	_args.Req = req
 	var _result quiz.QuizServicePublishChoiceQuestionResult
 	if err = p.c.Call(ctx, "PublishChoiceQuestion", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) PublishTrueOrFalseQuestion(ctx context.Context, req *quiz.PublishTrueOrFalseQuestionReq) (r *quiz.PublishTrueOrFalseQuestionResp, err error) {
+	var _args quiz.QuizServicePublishTrueOrFalseQuestionArgs
+	_args.Req = req
+	var _result quiz.QuizServicePublishTrueOrFalseQuestionResult
+	if err = p.c.Call(ctx, "PublishTrueOrFalseQuestion", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

@@ -20,6 +20,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"ChatWithAI": kitex.NewMethodInfo(
+		chatWithAIHandler,
+		newAIServiceChatWithAIArgs,
+		newAIServiceChatWithAIResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -104,6 +111,24 @@ func newAIServiceAnalyzeAudioResult() interface{} {
 	return ai.NewAIServiceAnalyzeAudioResult()
 }
 
+func chatWithAIHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*ai.AIServiceChatWithAIArgs)
+	realResult := result.(*ai.AIServiceChatWithAIResult)
+	success, err := handler.(ai.AIService).ChatWithAI(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newAIServiceChatWithAIArgs() interface{} {
+	return ai.NewAIServiceChatWithAIArgs()
+}
+
+func newAIServiceChatWithAIResult() interface{} {
+	return ai.NewAIServiceChatWithAIResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -119,6 +144,16 @@ func (p *kClient) AnalyzeAudio(ctx context.Context, req *ai.AnalyzeAudioReq) (r 
 	_args.Req = req
 	var _result ai.AIServiceAnalyzeAudioResult
 	if err = p.c.Call(ctx, "AnalyzeAudio", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) ChatWithAI(ctx context.Context, req *ai.ChatWithAIReq) (r *ai.ChatWithAIResp, err error) {
+	var _args ai.AIServiceChatWithAIArgs
+	_args.Req = req
+	var _result ai.AIServiceChatWithAIResult
+	if err = p.c.Call(ctx, "ChatWithAI", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

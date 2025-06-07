@@ -38,6 +38,10 @@ func MigrateQuestion(db *gorm.DB) {
 	if err != nil {
 		log.Errorf("迁移失败%s", err.Error())
 	}
+	err = db.AutoMigrate(&TrueOrFalseQuestion{}, &AnswerTrueOrFalseQuestion{}, &AnsweredTrueOrFalseQuestion{})
+	if err != nil {
+		log.Errorf("迁移失败%s", err.Error())
+	}
 }
 
 func MigrateChatMessage(db *gorm.DB) {

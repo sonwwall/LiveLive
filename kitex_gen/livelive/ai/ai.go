@@ -84,8 +84,86 @@ var fieldIDToName_AnalyzeAudioResp = map[int16]string{
 	255: "baseResp",
 }
 
+type ChatWithAIReq struct {
+	Content string `thrift:"content,1" frugal:"1,default,string" json:"content"`
+}
+
+func NewChatWithAIReq() *ChatWithAIReq {
+	return &ChatWithAIReq{}
+}
+
+func (p *ChatWithAIReq) InitDefault() {
+}
+
+func (p *ChatWithAIReq) GetContent() (v string) {
+	return p.Content
+}
+func (p *ChatWithAIReq) SetContent(val string) {
+	p.Content = val
+}
+
+func (p *ChatWithAIReq) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ChatWithAIReq(%+v)", *p)
+}
+
+var fieldIDToName_ChatWithAIReq = map[int16]string{
+	1: "content",
+}
+
+type ChatWithAIResp struct {
+	Content  string         `thrift:"content,1" frugal:"1,default,string" json:"content"`
+	BaseResp *base.BaseResp `thrift:"baseResp,255" frugal:"255,default,base.BaseResp" json:"baseResp"`
+}
+
+func NewChatWithAIResp() *ChatWithAIResp {
+	return &ChatWithAIResp{}
+}
+
+func (p *ChatWithAIResp) InitDefault() {
+}
+
+func (p *ChatWithAIResp) GetContent() (v string) {
+	return p.Content
+}
+
+var ChatWithAIResp_BaseResp_DEFAULT *base.BaseResp
+
+func (p *ChatWithAIResp) GetBaseResp() (v *base.BaseResp) {
+	if !p.IsSetBaseResp() {
+		return ChatWithAIResp_BaseResp_DEFAULT
+	}
+	return p.BaseResp
+}
+func (p *ChatWithAIResp) SetContent(val string) {
+	p.Content = val
+}
+func (p *ChatWithAIResp) SetBaseResp(val *base.BaseResp) {
+	p.BaseResp = val
+}
+
+func (p *ChatWithAIResp) IsSetBaseResp() bool {
+	return p.BaseResp != nil
+}
+
+func (p *ChatWithAIResp) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ChatWithAIResp(%+v)", *p)
+}
+
+var fieldIDToName_ChatWithAIResp = map[int16]string{
+	1:   "content",
+	255: "baseResp",
+}
+
 type AIService interface {
 	AnalyzeAudio(ctx context.Context, req *AnalyzeAudioReq) (r *AnalyzeAudioResp, err error)
+
+	ChatWithAI(ctx context.Context, req *ChatWithAIReq) (r *ChatWithAIResp, err error)
 }
 
 type AIServiceAnalyzeAudioArgs struct {
@@ -161,5 +239,81 @@ func (p *AIServiceAnalyzeAudioResult) String() string {
 }
 
 var fieldIDToName_AIServiceAnalyzeAudioResult = map[int16]string{
+	0: "success",
+}
+
+type AIServiceChatWithAIArgs struct {
+	Req *ChatWithAIReq `thrift:"req,1" frugal:"1,default,ChatWithAIReq" json:"req"`
+}
+
+func NewAIServiceChatWithAIArgs() *AIServiceChatWithAIArgs {
+	return &AIServiceChatWithAIArgs{}
+}
+
+func (p *AIServiceChatWithAIArgs) InitDefault() {
+}
+
+var AIServiceChatWithAIArgs_Req_DEFAULT *ChatWithAIReq
+
+func (p *AIServiceChatWithAIArgs) GetReq() (v *ChatWithAIReq) {
+	if !p.IsSetReq() {
+		return AIServiceChatWithAIArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+func (p *AIServiceChatWithAIArgs) SetReq(val *ChatWithAIReq) {
+	p.Req = val
+}
+
+func (p *AIServiceChatWithAIArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *AIServiceChatWithAIArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("AIServiceChatWithAIArgs(%+v)", *p)
+}
+
+var fieldIDToName_AIServiceChatWithAIArgs = map[int16]string{
+	1: "req",
+}
+
+type AIServiceChatWithAIResult struct {
+	Success *ChatWithAIResp `thrift:"success,0,optional" frugal:"0,optional,ChatWithAIResp" json:"success,omitempty"`
+}
+
+func NewAIServiceChatWithAIResult() *AIServiceChatWithAIResult {
+	return &AIServiceChatWithAIResult{}
+}
+
+func (p *AIServiceChatWithAIResult) InitDefault() {
+}
+
+var AIServiceChatWithAIResult_Success_DEFAULT *ChatWithAIResp
+
+func (p *AIServiceChatWithAIResult) GetSuccess() (v *ChatWithAIResp) {
+	if !p.IsSetSuccess() {
+		return AIServiceChatWithAIResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *AIServiceChatWithAIResult) SetSuccess(x interface{}) {
+	p.Success = x.(*ChatWithAIResp)
+}
+
+func (p *AIServiceChatWithAIResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *AIServiceChatWithAIResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("AIServiceChatWithAIResult(%+v)", *p)
+}
+
+var fieldIDToName_AIServiceChatWithAIResult = map[int16]string{
 	0: "success",
 }

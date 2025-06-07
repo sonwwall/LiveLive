@@ -332,7 +332,21 @@ func (s *LiveServiceImpl) StartRecording(ctx context.Context, req *live.StartRec
 		if result.BaseResp.Code != 0 {
 			log.Println("分析音频错误:", result.BaseResp.Msg)
 		}
-		log.Println("音频:", result.Summary)
+		log.Println("总结:", result.Summary)
+
+		msg := map[string]interface{}{
+			"type": "summary",
+			"data": map[string]interface{}{
+				"summary": result.Summary,
+			},
+		}
+
+		data, _ := json.Marshal(msg)
+
+		s.wsClient.BroadcastToCourse(ctx, &websocket.BroadcastToCourseReq{
+			CourseId: int64(existCourse.ID),
+			Data:     data,
+		})
 	}()
 
 	res := &live.StartRecordingResp{

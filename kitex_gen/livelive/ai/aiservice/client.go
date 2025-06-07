@@ -12,6 +12,7 @@ import (
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
 	AnalyzeAudio(ctx context.Context, req *ai.AnalyzeAudioReq, callOptions ...callopt.Option) (r *ai.AnalyzeAudioResp, err error)
+	ChatWithAI(ctx context.Context, req *ai.ChatWithAIReq, callOptions ...callopt.Option) (r *ai.ChatWithAIResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -46,4 +47,9 @@ type kAIServiceClient struct {
 func (p *kAIServiceClient) AnalyzeAudio(ctx context.Context, req *ai.AnalyzeAudioReq, callOptions ...callopt.Option) (r *ai.AnalyzeAudioResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.AnalyzeAudio(ctx, req)
+}
+
+func (p *kAIServiceClient) ChatWithAI(ctx context.Context, req *ai.ChatWithAIReq, callOptions ...callopt.Option) (r *ai.ChatWithAIResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.ChatWithAI(ctx, req)
 }

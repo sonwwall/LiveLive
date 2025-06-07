@@ -3,6 +3,7 @@ package main
 import (
 	ai "LiveLive/kitex_gen/livelive/ai"
 	"LiveLive/kitex_gen/livelive/base"
+	"LiveLive/kitex_gen/livelive/websocket/websocketservice"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -23,6 +24,7 @@ import (
 
 // AIServiceImpl implements the last service interface defined in the IDL.
 type AIServiceImpl struct {
+	wsClient websocketservice.Client
 }
 
 // AnalyzeAudio implements the AIServiceImpl interface.
@@ -295,4 +297,10 @@ func GenerateSummaryFromText(ctx context.Context, text string) (string, error) {
 	}
 
 	return result.Content, nil
+}
+
+// ChatWithAI implements the AIServiceImpl interface.
+func (s *AIServiceImpl) ChatWithAI(ctx context.Context, req *ai.ChatWithAIReq) (resp *ai.ChatWithAIResp, err error) {
+	// TODO: Your code here...
+	return
 }

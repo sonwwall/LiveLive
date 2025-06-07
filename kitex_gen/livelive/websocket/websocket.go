@@ -46,6 +46,44 @@ var fieldIDToName_BroadcastToCourseReq = map[int16]string{
 	2: "data",
 }
 
+type BroadcastToCourseResp struct {
+	BaseResp *base.BaseResp `thrift:"baseResp,255" frugal:"255,default,base.BaseResp" json:"baseResp"`
+}
+
+func NewBroadcastToCourseResp() *BroadcastToCourseResp {
+	return &BroadcastToCourseResp{}
+}
+
+func (p *BroadcastToCourseResp) InitDefault() {
+}
+
+var BroadcastToCourseResp_BaseResp_DEFAULT *base.BaseResp
+
+func (p *BroadcastToCourseResp) GetBaseResp() (v *base.BaseResp) {
+	if !p.IsSetBaseResp() {
+		return BroadcastToCourseResp_BaseResp_DEFAULT
+	}
+	return p.BaseResp
+}
+func (p *BroadcastToCourseResp) SetBaseResp(val *base.BaseResp) {
+	p.BaseResp = val
+}
+
+func (p *BroadcastToCourseResp) IsSetBaseResp() bool {
+	return p.BaseResp != nil
+}
+
+func (p *BroadcastToCourseResp) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("BroadcastToCourseResp(%+v)", *p)
+}
+
+var fieldIDToName_BroadcastToCourseResp = map[int16]string{
+	255: "baseResp",
+}
+
 type AggregateAnswersReq struct {
 	QuestionId    int64 `thrift:"question_id,1" frugal:"1,default,i64" json:"question_id"`
 	CourseId      int64 `thrift:"course_id,2" frugal:"2,default,i64" json:"course_id"`
@@ -93,44 +131,6 @@ var fieldIDToName_AggregateAnswersReq = map[int16]string{
 	3: "correct_answer",
 }
 
-type BroadcastToCourseResp struct {
-	BaseResp *base.BaseResp `thrift:"baseResp,255" frugal:"255,default,base.BaseResp" json:"baseResp"`
-}
-
-func NewBroadcastToCourseResp() *BroadcastToCourseResp {
-	return &BroadcastToCourseResp{}
-}
-
-func (p *BroadcastToCourseResp) InitDefault() {
-}
-
-var BroadcastToCourseResp_BaseResp_DEFAULT *base.BaseResp
-
-func (p *BroadcastToCourseResp) GetBaseResp() (v *base.BaseResp) {
-	if !p.IsSetBaseResp() {
-		return BroadcastToCourseResp_BaseResp_DEFAULT
-	}
-	return p.BaseResp
-}
-func (p *BroadcastToCourseResp) SetBaseResp(val *base.BaseResp) {
-	p.BaseResp = val
-}
-
-func (p *BroadcastToCourseResp) IsSetBaseResp() bool {
-	return p.BaseResp != nil
-}
-
-func (p *BroadcastToCourseResp) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf("BroadcastToCourseResp(%+v)", *p)
-}
-
-var fieldIDToName_BroadcastToCourseResp = map[int16]string{
-	255: "baseResp",
-}
-
 type AggregateAnswersResp struct {
 	Accuracy float64 `thrift:"accuracy,1" frugal:"1,default,double" json:"accuracy"`
 }
@@ -157,6 +157,82 @@ func (p *AggregateAnswersResp) String() string {
 }
 
 var fieldIDToName_AggregateAnswersResp = map[int16]string{
+	1: "accuracy",
+}
+
+type AggregateTrueOrFalseAnswersReq struct {
+	QuestionId    int64 `thrift:"question_id,1" frugal:"1,default,i64" json:"question_id"`
+	CourseId      int64 `thrift:"course_id,2" frugal:"2,default,i64" json:"course_id"`
+	CorrectAnswer int8  `thrift:"correct_answer,3" frugal:"3,default,i8" json:"correct_answer"`
+}
+
+func NewAggregateTrueOrFalseAnswersReq() *AggregateTrueOrFalseAnswersReq {
+	return &AggregateTrueOrFalseAnswersReq{}
+}
+
+func (p *AggregateTrueOrFalseAnswersReq) InitDefault() {
+}
+
+func (p *AggregateTrueOrFalseAnswersReq) GetQuestionId() (v int64) {
+	return p.QuestionId
+}
+
+func (p *AggregateTrueOrFalseAnswersReq) GetCourseId() (v int64) {
+	return p.CourseId
+}
+
+func (p *AggregateTrueOrFalseAnswersReq) GetCorrectAnswer() (v int8) {
+	return p.CorrectAnswer
+}
+func (p *AggregateTrueOrFalseAnswersReq) SetQuestionId(val int64) {
+	p.QuestionId = val
+}
+func (p *AggregateTrueOrFalseAnswersReq) SetCourseId(val int64) {
+	p.CourseId = val
+}
+func (p *AggregateTrueOrFalseAnswersReq) SetCorrectAnswer(val int8) {
+	p.CorrectAnswer = val
+}
+
+func (p *AggregateTrueOrFalseAnswersReq) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("AggregateTrueOrFalseAnswersReq(%+v)", *p)
+}
+
+var fieldIDToName_AggregateTrueOrFalseAnswersReq = map[int16]string{
+	1: "question_id",
+	2: "course_id",
+	3: "correct_answer",
+}
+
+type AggregateTrueOrFalseAnswersResp struct {
+	Accuracy float64 `thrift:"accuracy,1" frugal:"1,default,double" json:"accuracy"`
+}
+
+func NewAggregateTrueOrFalseAnswersResp() *AggregateTrueOrFalseAnswersResp {
+	return &AggregateTrueOrFalseAnswersResp{}
+}
+
+func (p *AggregateTrueOrFalseAnswersResp) InitDefault() {
+}
+
+func (p *AggregateTrueOrFalseAnswersResp) GetAccuracy() (v float64) {
+	return p.Accuracy
+}
+func (p *AggregateTrueOrFalseAnswersResp) SetAccuracy(val float64) {
+	p.Accuracy = val
+}
+
+func (p *AggregateTrueOrFalseAnswersResp) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("AggregateTrueOrFalseAnswersResp(%+v)", *p)
+}
+
+var fieldIDToName_AggregateTrueOrFalseAnswersResp = map[int16]string{
 	1: "accuracy",
 }
 
@@ -231,6 +307,8 @@ type WebsocketService interface {
 	BroadcastToCourse(ctx context.Context, req *BroadcastToCourseReq) (r *BroadcastToCourseResp, err error)
 
 	AggregateAnswers(ctx context.Context, req *AggregateAnswersReq) (r *AggregateAnswersResp, err error)
+
+	AggregateTrueOrFalseAnswers(ctx context.Context, req *AggregateTrueOrFalseAnswersReq) (r *AggregateTrueOrFalseAnswersResp, err error)
 
 	CountRegister(ctx context.Context, req *CountRegisterReq) (r *CountRegisterResp, err error)
 }
@@ -384,6 +462,82 @@ func (p *WebsocketServiceAggregateAnswersResult) String() string {
 }
 
 var fieldIDToName_WebsocketServiceAggregateAnswersResult = map[int16]string{
+	0: "success",
+}
+
+type WebsocketServiceAggregateTrueOrFalseAnswersArgs struct {
+	Req *AggregateTrueOrFalseAnswersReq `thrift:"req,1" frugal:"1,default,AggregateTrueOrFalseAnswersReq" json:"req"`
+}
+
+func NewWebsocketServiceAggregateTrueOrFalseAnswersArgs() *WebsocketServiceAggregateTrueOrFalseAnswersArgs {
+	return &WebsocketServiceAggregateTrueOrFalseAnswersArgs{}
+}
+
+func (p *WebsocketServiceAggregateTrueOrFalseAnswersArgs) InitDefault() {
+}
+
+var WebsocketServiceAggregateTrueOrFalseAnswersArgs_Req_DEFAULT *AggregateTrueOrFalseAnswersReq
+
+func (p *WebsocketServiceAggregateTrueOrFalseAnswersArgs) GetReq() (v *AggregateTrueOrFalseAnswersReq) {
+	if !p.IsSetReq() {
+		return WebsocketServiceAggregateTrueOrFalseAnswersArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+func (p *WebsocketServiceAggregateTrueOrFalseAnswersArgs) SetReq(val *AggregateTrueOrFalseAnswersReq) {
+	p.Req = val
+}
+
+func (p *WebsocketServiceAggregateTrueOrFalseAnswersArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *WebsocketServiceAggregateTrueOrFalseAnswersArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("WebsocketServiceAggregateTrueOrFalseAnswersArgs(%+v)", *p)
+}
+
+var fieldIDToName_WebsocketServiceAggregateTrueOrFalseAnswersArgs = map[int16]string{
+	1: "req",
+}
+
+type WebsocketServiceAggregateTrueOrFalseAnswersResult struct {
+	Success *AggregateTrueOrFalseAnswersResp `thrift:"success,0,optional" frugal:"0,optional,AggregateTrueOrFalseAnswersResp" json:"success,omitempty"`
+}
+
+func NewWebsocketServiceAggregateTrueOrFalseAnswersResult() *WebsocketServiceAggregateTrueOrFalseAnswersResult {
+	return &WebsocketServiceAggregateTrueOrFalseAnswersResult{}
+}
+
+func (p *WebsocketServiceAggregateTrueOrFalseAnswersResult) InitDefault() {
+}
+
+var WebsocketServiceAggregateTrueOrFalseAnswersResult_Success_DEFAULT *AggregateTrueOrFalseAnswersResp
+
+func (p *WebsocketServiceAggregateTrueOrFalseAnswersResult) GetSuccess() (v *AggregateTrueOrFalseAnswersResp) {
+	if !p.IsSetSuccess() {
+		return WebsocketServiceAggregateTrueOrFalseAnswersResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *WebsocketServiceAggregateTrueOrFalseAnswersResult) SetSuccess(x interface{}) {
+	p.Success = x.(*AggregateTrueOrFalseAnswersResp)
+}
+
+func (p *WebsocketServiceAggregateTrueOrFalseAnswersResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *WebsocketServiceAggregateTrueOrFalseAnswersResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("WebsocketServiceAggregateTrueOrFalseAnswersResult(%+v)", *p)
+}
+
+var fieldIDToName_WebsocketServiceAggregateTrueOrFalseAnswersResult = map[int16]string{
 	0: "success",
 }
 
