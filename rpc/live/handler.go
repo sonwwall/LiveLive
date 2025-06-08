@@ -291,7 +291,6 @@ func (s *LiveServiceImpl) StartRecording(ctx context.Context, req *live.StartRec
 
 	// 启动 ffmpeg
 	//cmd := exec.Command("ffmpeg", "-i", RtmpUrl+StreamKeyRow, "-c", "copy", "-f", "flv", output)
-	//cmd.Env = append(os.Environ(), "PATH=/opt/homebrew/bin:"+os.Getenv("PATH"))
 
 	cmd := exec.Command("/opt/homebrew/bin/ffmpeg", "-i", RtmpUrl+StreamKeyRow, "-c", "copy", "-f", "flv", output)
 

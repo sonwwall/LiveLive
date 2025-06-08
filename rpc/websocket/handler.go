@@ -105,7 +105,7 @@ func (s *WebsocketServiceImpl) CountRegister(ctx context.Context, req *websocket
 	resultMsg := map[string]interface{}{
 		"type": "register_result",
 		"data": map[string]interface{}{
-			"total":      total,
+			"total": total,
 			"已签到人数": signedIn,
 			"未签到人数": total - signedIn,
 			"未签到学生": unsignedFields,
