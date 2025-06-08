@@ -51,22 +51,13 @@ type RegisterMessage struct {
 func NewHandler(hub *WsHub) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		courseIDStr := r.URL.Query().Get("course_id")
-		userIDStr := r.URL.Query().Get("user_id")
-		roleStr := r.URL.Query().Get("role")
 		token := r.Header.Get("Authorization")
 
 		if courseIDStr == "" {
 			http.Error(w, "course_id required", http.StatusBadRequest)
 			return
 		}
-		if userIDStr == "" {
-			http.Error(w, "student_id required", http.StatusBadRequest)
-			return
-		}
-		if roleStr == "" {
-			http.Error(w, "student_role required", http.StatusBadRequest)
-			return
-		}
+
 		if token == "" {
 			http.Error(w, "token required", http.StatusBadRequest)
 		}
@@ -76,23 +67,10 @@ func NewHandler(hub *WsHub) http.HandlerFunc {
 			http.Error(w, "invalid course_id", http.StatusBadRequest)
 			return
 		}
-		userID, err := strconv.ParseInt(userIDStr, 10, 64)
-		if err != nil {
-			http.Error(w, "invalid student_id", http.StatusBadRequest)
-			return
-		}
-		roleID, err := strconv.ParseInt(roleStr, 10, 64)
-		if err != nil {
-			http.Error(w, "invalid role", http.StatusBadRequest)
-			return
-		}
 
 		user, err := ParseJWTFromHeader(token)
 		if err != nil {
 			http.Error(w, "invalid token", http.StatusBadRequest)
-		}
-		if int64(user.ID) != userID {
-			http.Error(w, "invalid user_id", http.StatusBadRequest)
 		}
 
 		conn, err := upgrader.Upgrade(w, r, nil)
@@ -104,8 +82,8 @@ func NewHandler(hub *WsHub) http.HandlerFunc {
 		client := &WsClient{
 			Conn:     conn,
 			CourseID: courseID,
-			UserId:   userID,
-			Role:     int8(roleID),
+			UserId:   int64(user.ID),
+			Role:     int8(user.Role - 1),
 			SendCh:   make(chan []byte, 256),
 		}
 
