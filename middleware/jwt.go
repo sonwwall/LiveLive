@@ -17,14 +17,14 @@ import (
 
 var (
 	JwtMiddleware *jwt.HertzJWTMiddleware
-	IdentityKey   = "identity"
+	IdentityKey   = "identity-sonwwall"
 )
 
 func InitJwt() {
 	var err error
 	JwtMiddleware, err = jwt.New(&jwt.HertzJWTMiddleware{
 		Realm:         "test zone",
-		Key:           []byte("secret key"),
+		Key:           []byte("secret key-sonwwall"),
 		Timeout:       48 * time.Hour,
 		MaxRefresh:    48 * time.Hour,
 		TokenLookup:   "header: Authorization, query: token, cookie: jwt",

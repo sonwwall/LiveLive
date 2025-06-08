@@ -3,6 +3,7 @@ package main
 import (
 	"LiveLive/dao"
 	websocket "LiveLive/kitex_gen/livelive/websocket/websocketservice"
+
 	ws2 "LiveLive/rpc/websocket/ws"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
@@ -18,6 +19,7 @@ func main() {
 	//创建并连接上websocket服务器
 	hub := ws2.NewHub()
 	go func() {
+
 		http.HandleFunc("/ws", ws2.NewHandler(hub))
 		log.Println("WebSocket server started on :8060")
 		log.Fatal(http.ListenAndServe(":8060", nil))

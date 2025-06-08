@@ -2,14 +2,19 @@ package ws
 
 import (
 	dao "LiveLive/dao/rdb"
+	"LiveLive/model"
 	"LiveLive/utils"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/segmentio/kafka-go"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -48,6 +53,8 @@ func NewHandler(hub *WsHub) http.HandlerFunc {
 		courseIDStr := r.URL.Query().Get("course_id")
 		userIDStr := r.URL.Query().Get("user_id")
 		roleStr := r.URL.Query().Get("role")
+		token := r.Header.Get("Authorization")
+
 		if courseIDStr == "" {
 			http.Error(w, "course_id required", http.StatusBadRequest)
 			return
@@ -59,6 +66,9 @@ func NewHandler(hub *WsHub) http.HandlerFunc {
 		if roleStr == "" {
 			http.Error(w, "student_role required", http.StatusBadRequest)
 			return
+		}
+		if token == "" {
+			http.Error(w, "token required", http.StatusBadRequest)
 		}
 
 		courseID, err := strconv.ParseInt(courseIDStr, 10, 64)
@@ -75,6 +85,14 @@ func NewHandler(hub *WsHub) http.HandlerFunc {
 		if err != nil {
 			http.Error(w, "invalid role", http.StatusBadRequest)
 			return
+		}
+
+		user, err := ParseJWTFromHeader(token)
+		if err != nil {
+			http.Error(w, "invalid token", http.StatusBadRequest)
+		}
+		if int64(user.ID) != userID {
+			http.Error(w, "invalid user_id", http.StatusBadRequest)
 		}
 
 		conn, err := upgrader.Upgrade(w, r, nil)
@@ -96,6 +114,47 @@ func NewHandler(hub *WsHub) http.HandlerFunc {
 		go client.WritePump()
 		go client.ReadPump(hub)
 	}
+}
+
+var jwtSecretKey = []byte("secret key-sonwwall") // 与 middleware.InitJwt 中保持一致
+var identityKey = "identity-sonwwall"            // 同 middleware.IdentityKey
+
+func ParseJWTFromHeader(authHeader string) (*model.User, error) {
+	if authHeader == "" {
+		return nil, errors.New("missing Authorization header")
+	}
+
+	parts := strings.SplitN(authHeader, " ", 2)
+	if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
+		return nil, errors.New("invalid Authorization format")
+	}
+	tokenStr := parts[1]
+
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+		return jwtSecretKey, nil
+	})
+
+	if err != nil || !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, errors.New("invalid claims type")
+	}
+
+	user := &model.User{
+		Username: claims[identityKey].(string),
+		Role:     int32(claims["role"].(float64)),
+		Model: gorm.Model{
+			ID: uint(claims["id"].(float64)),
+		},
+	}
+
+	return user, nil
 }
 
 func HandleMessage(msg []byte, client *WsClient, hub *WsHub) {

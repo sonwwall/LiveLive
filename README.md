@@ -61,7 +61,7 @@
 
 ## 🔗 接口文档
 
-📘 [👉 点击查看接口文档（Apipost）](https://doc.apipost.net/docs/detail/486962bd70b1000?target_id=2f4d22e9bd00a4)
+📘 [👉 点击查看接口文档（Apipost）](https://doc.apipost.net/docs/487fb69e1cb1000?locale=zh-cn)
 
 ---
 
